@@ -24,6 +24,7 @@ export default async function MePage() {
 
   const matches = await q(
     `SELECT m.*, t.name AS tname, t.game AS tgame, t.id AS tid,
+            t.status AS tstatus, t.bracket_size,
             CASE WHEN m.p1_id = ANY($1) THEN p2.full_name ELSE p1.full_name END AS opponent,
             (m.p1_id = ANY($1)) AS i_am_p1,
             (m.winner_id = ANY($1)) AS i_won
@@ -38,6 +39,18 @@ export default async function MePage() {
 
   const active = matches.filter((m) => m.status !== "done");
   const past = matches.filter((m) => m.status === "done");
+
+  // Katıldığı turnuvalar: aktif maçı olmayanlar için izleme/şampiyonluk kartı
+  const byTournament = new Map();
+  for (const m of matches) {
+    if (!byTournament.has(m.tid)) byTournament.set(m.tid, m);
+  }
+  const finalsWon = new Set(
+    matches.filter((m) => m.i_won && m.round === Math.log2(m.bracket_size)).map((m) => m.tid)
+  );
+  const spectate = [...byTournament.values()].filter(
+    (m) => !active.some((a) => a.tid === m.tid)
+  );
   const tavlaPoints = (await getSettings()).tavla_points ?? "3";
 
   return (
@@ -139,6 +152,26 @@ export default async function MePage() {
           </Card>
         ))}
       </div>
+
+      {spectate.map((m) => (
+        <Card key={`sp-${m.tid}`} className={`mt-4 ${finalsWon.has(m.tid) ? "border-emerald-300 bg-emerald-50/50" : ""}`}>
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5">
+            <div>
+              <p className="font-semibold">
+                {GAME_ICON[m.tgame]} {m.tname} —{" "}
+                {finalsWon.has(m.tid) ? t("youChampion") : m.tstatus === "finished" ? t(`ts_finished`) : t("spectateTitle")}
+              </p>
+              <p className="mt-0.5 text-sm text-stone-500">
+                {finalsWon.has(m.tid) ? t("championHint") : m.tstatus !== "finished" ? t("spectateHint") : ""}
+              </p>
+            </div>
+            <a className={buttonVariants({ variant: finalsWon.has(m.tid) ? "default" : "outline", size: "sm" })}
+              href={`/t/${m.tid}`}>
+              {t("watchBracket")}
+            </a>
+          </CardContent>
+        </Card>
+      ))}
 
       {past.length > 0 && (
         <>
