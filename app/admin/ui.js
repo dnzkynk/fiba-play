@@ -56,18 +56,24 @@ export function AdminLoginForm() {
 }
 
 export function AddParticipantForm() {
-  const [f, setF] = useState({ fullName: "", email: "", company: "", game: "chess", size: "16" });
+  const [f, setF] = useState({ fullName: "", email: "", company: "", size: "16" });
+  const [games, setGames] = useState({ chess: true, tavla: false });
   const [msg, setMsg] = useState(null);
   const router = useRouter();
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  const selected = Object.keys(games).filter((g) => games[g]);
 
   async function submit(e) {
     e.preventDefault();
     setMsg(null);
-    const res = await fetch("/api/admin/participants", { method: "POST", body: JSON.stringify(f) });
+    if (!selected.length) return setMsg({ ok: false, text: "En az bir oyun seçin" });
+    const res = await fetch("/api/admin/participants", {
+      method: "POST",
+      body: JSON.stringify({ ...f, games: selected }),
+    });
     const data = await res.json();
     if (res.ok) {
-      setMsg({ ok: true, text: `Eklendi — parola: ${data.password}` });
+      setMsg({ ok: true, text: `Eklendi (${selected.length} oyun) — parola: ${data.password}` });
       setF({ ...f, fullName: "", email: "", company: "" });
       router.refresh();
     } else setMsg({ ok: false, text: data.error });
@@ -75,35 +81,38 @@ export function AddParticipantForm() {
 
   return (
     <form onSubmit={submit}>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
+      <div className="flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1.5">
           <Label>Ad Soyad</Label>
-          <Input value={f.fullName} onChange={set("fullName")} required placeholder="Ali Veli" />
+          <Input className="w-44" value={f.fullName} onChange={set("fullName")} required placeholder="Ali Veli" />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label>E-posta</Label>
-          <Input type="email" value={f.email} onChange={set("email")} required placeholder="ali@fiba.com" />
+          <Input className="w-52" type="email" value={f.email} onChange={set("email")} required placeholder="ali@fiba.com" />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label>Şirket</Label>
-          <Input value={f.company} onChange={set("company")} placeholder="FibaBanka" />
+          <Input className="w-36" value={f.company} onChange={set("company")} placeholder="FibaBanka" />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label>Oyun</Label>
-          <Select value={f.game} onChange={set("game")}>
-            <option value="chess">♟ Satranç</option>
-            <option value="tavla">🎲 Tavla</option>
-          </Select>
+          <Label>Oyunlar</Label>
+          <div className="flex h-9 items-center gap-3 rounded-md border border-stone-300 bg-white px-3">
+            {[["chess", "♟ Satranç"], ["tavla", "🎲 Tavla"]].map(([key, label]) => (
+              <label key={key} className="flex cursor-pointer items-center gap-1.5 text-sm font-normal text-stone-700">
+                <input type="checkbox" className="accent-indigo-600" checked={games[key]}
+                  onChange={(e) => setGames({ ...games, [key]: e.target.checked })} />
+                {label}
+              </label>
+            ))}
+          </div>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label>Turnuva boyu</Label>
-          <Select value={f.size} onChange={set("size")}>
+          <Select className="w-32" value={f.size} onChange={set("size")}>
             {[8, 16, 32, 64].map((s) => <option key={s} value={s}>{s} kişilik</option>)}
           </Select>
         </div>
-        <div className="flex items-end">
-          <Button type="submit" className="w-full">Ekle</Button>
-        </div>
+        <Button type="submit">Ekle</Button>
       </div>
       {msg && (
         <p className={`mt-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</p>
@@ -112,12 +121,12 @@ export function AddParticipantForm() {
   );
 }
 
-export function DeleteParticipantButton({ id }) {
+export function DeleteParticipantButton({ id, label = "Sil" }) {
   const router = useRouter();
   return (
     <Button variant="destructive" size="sm"
       onClick={async () => {
-        if (!confirm("Katılımcı silinsin mi?")) return;
+        if (!confirm("Katılımcı bu oyundan çıkarılsın mı?")) return;
         const res = await fetch("/api/admin/participants", {
           method: "DELETE",
           body: JSON.stringify({ id }),
@@ -125,7 +134,7 @@ export function DeleteParticipantButton({ id }) {
         if (!res.ok) alert((await res.json()).error);
         router.refresh();
       }}>
-      Sil
+      {label}
     </Button>
   );
 }
@@ -198,34 +207,45 @@ export function GenerateButton() {
 }
 
 export function SettingsForm({ initial }) {
-  const [f, setF] = useState({
-    chess_clock_limit: initial.chess_clock_limit ?? "600",
-    chess_clock_increment: initial.chess_clock_increment ?? "5",
-    tavla_points: initial.tavla_points ?? "3",
-  });
+  const [chessTime, setChessTime] = useState(`${initial.chess_clock_limit ?? "600"}:${initial.chess_clock_increment ?? "5"}`);
+  const [tavlaPoints, setTavlaPoints] = useState(initial.tavla_points ?? "3");
   const [msg, setMsg] = useState(null);
-  const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+
   async function save(e) {
     e.preventDefault();
-    const res = await fetch("/api/admin/settings", { method: "POST", body: JSON.stringify(f) });
-    setMsg(res.ok ? { ok: true, text: "Kaydedildi" } : { ok: false, text: (await res.json()).error });
+    const [limit, inc] = chessTime.split(":");
+    const res = await fetch("/api/admin/settings", {
+      method: "POST",
+      body: JSON.stringify({ chess_clock_limit: limit, chess_clock_increment: inc, tavla_points: tavlaPoints }),
+    });
+    setMsg(res.ok ? { ok: true, text: "Kaydedildi ✓" } : { ok: false, text: (await res.json()).error });
   }
+
   return (
-    <form onSubmit={save} className="flex flex-wrap items-end gap-3">
+    <form onSubmit={save} className="flex flex-wrap items-end gap-4">
       <div className="flex flex-col gap-1.5">
-        <Label>Satranç süresi (saniye)</Label>
-        <Input type="number" className="w-32" value={f.chess_clock_limit} onChange={set("chess_clock_limit")} />
+        <Label>♟ Satranç maç süresi</Label>
+        <Select className="w-64" value={chessTime} onChange={(e) => setChessTime(e.target.value)}>
+          <option value="180:2">3 dk + hamle başına 2 sn (Blitz)</option>
+          <option value="300:3">5 dk + hamle başına 3 sn (Blitz)</option>
+          <option value="600:5">10 dk + hamle başına 5 sn (Rapid — önerilen)</option>
+          <option value="900:10">15 dk + hamle başına 10 sn (Rapid)</option>
+          <option value="1800:20">30 dk + hamle başına 20 sn (Klasik)</option>
+        </Select>
+        <span className="text-xs text-stone-400">Oyuncu başına düşünme süresi + her hamlede eklenen saniye</span>
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label>Hamle eki (saniye)</Label>
-        <Input type="number" className="w-28" value={f.chess_clock_increment} onChange={set("chess_clock_increment")} />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label>Tavla maç puanı</Label>
-        <Input type="number" className="w-28" value={f.tavla_points} onChange={set("tavla_points")} />
+        <Label>🎲 Tavla maç uzunluğu</Label>
+        <Select className="w-64" value={tavlaPoints} onChange={(e) => setTavlaPoints(e.target.value)}>
+          <option value="1">Tek oyun (1 puan) — en hızlı</option>
+          <option value="3">3 puanlık maç (önerilen)</option>
+          <option value="5">5 puanlık maç</option>
+          <option value="7">7 puanlık maç — uzun</option>
+        </Select>
+        <span className="text-xs text-stone-400">Bu puana ilk ulaşan maçı kazanır (mars 2 sayılır)</span>
       </div>
       <Button type="submit">Kaydet</Button>
-      {msg && <span className={`text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
+      {msg && <span className={`pb-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
     </form>
   );
 }
@@ -275,11 +295,11 @@ export function TournamentScheduleForm({ tournamentId, startsAt, intervalHours }
           <option value="12">12 saat</option>
           <option value="24">1 gün</option>
           <option value="48">2 gün</option>
-          <option value="72">3 gün</option>
+          <option value="168">1 hafta</option>
         </Select>
       </div>
       <Button disabled={!at} onClick={apply}>Programı uygula</Button>
-      {msg && <span className={`text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
+      {msg && <span className={`pb-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
     </div>
   );
 }

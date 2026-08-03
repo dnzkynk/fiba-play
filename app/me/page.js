@@ -61,7 +61,10 @@ export default async function MePage() {
         </div>
       )}
 
-      <div className="mt-6 flex flex-col gap-4">
+      {active.length > 0 && (
+        <h2 className="mt-8 text-lg font-semibold tracking-tight">{t("activeMatches")}</h2>
+      )}
+      <div className="mt-3 flex flex-col gap-4">
         {active.map((m) => (
           <Card key={m.id} className={m.status === "live" ? "border-amber-300 ring-1 ring-amber-300" : ""}>
             <CardContent className="p-5">

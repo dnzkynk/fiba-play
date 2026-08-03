@@ -2,7 +2,6 @@ import { q } from "@/lib/db";
 import { isAdmin } from "@/lib/auth";
 import { Card } from "@/components/ui/card";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
-import { AdminLoginForm } from "../ui";
 
 export const dynamic = "force-dynamic";
 
@@ -28,12 +27,11 @@ const ACTION_TR = {
 };
 
 export default async function AuditPage() {
-  if (!(await isAdmin())) return <AdminLoginForm />;
+  if (!(await isAdmin())) return null;
   const rows = await q("SELECT * FROM audit_log ORDER BY id DESC LIMIT 200");
 
   return (
     <>
-      <a className="text-sm text-stone-500 hover:text-stone-900" href="/admin">← Panele dön</a>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">İşlem geçmişi</h1>
       <p className="mt-1 text-sm text-stone-500">Son 200 kayıt — kura, sonuç ve yönetici müdahalelerinin tamamı.</p>
       <Card className="mt-5">

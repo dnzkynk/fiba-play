@@ -3,16 +3,14 @@ import { isAdmin } from "@/lib/auth";
 import { tournamentWithMatches, roundName, STATUS_TR, T_STATUS_TR } from "@/lib/queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, STATUS_VARIANT } from "@/components/ui/badge";
-import { AdminLoginForm, MatchControls, SwapForm, TournamentScheduleForm } from "../../ui";
-import { ensureWatcher } from "@/lib/watcher";
+import { MatchControls, SwapForm, TournamentScheduleForm } from "../../ui";
 import { AutoRefresh } from "@/app/refresh";
 import { q } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminTournament({ params }) {
-  if (!(await isAdmin())) return <AdminLoginForm />;
-  ensureWatcher();
+  if (!(await isAdmin())) return null;
   const { id } = await params;
   const t = await tournamentWithMatches(parseInt(id, 10));
   if (!t) notFound();
@@ -30,7 +28,7 @@ export default async function AdminTournament({ params }) {
   return (
     <>
       <AutoRefresh seconds={20} />
-      <a className="text-sm text-stone-500 hover:text-stone-900" href="/admin">← Panele dön</a>
+      <a className="text-sm text-stone-500 hover:text-stone-900" href="/admin/tournaments">← Turnuvalar</a>
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">
           {t.game === "chess" ? "♟" : "🎲"} {t.name}

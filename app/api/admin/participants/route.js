@@ -14,7 +14,9 @@ export async function POST(req) {
   }
   const b = await req.json();
   const email = (b.email ?? "").trim().toLowerCase();
-  const game = b.game === "tavla" ? "tavla" : "chess";
+  const games = Array.isArray(b.games) && b.games.length
+    ? b.games.filter((g) => ["chess", "tavla"].includes(g))
+    : [b.game === "tavla" ? "tavla" : "chess"];
   const size = parseInt(b.size, 10);
   if (!b.fullName?.trim()) return NextResponse.json({ error: "Ad soyad gerekli" }, { status: 400 });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
@@ -29,14 +31,18 @@ export async function POST(req) {
   const password = existing?.password ?? generatePassword();
 
   try {
-    const [p] = await q(
-      `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password)
-       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-      [b.fullName.trim(), email, b.company?.trim() || null, game, size,
-       crypto.randomBytes(16).toString("hex"), password]
-    );
-    await audit("participant_add", { id: p.id, email }, admin.email);
-    return NextResponse.json(p);
+    const created = [];
+    for (const game of games) {
+      const [p] = await q(
+        `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password)
+         VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+        [b.fullName.trim(), email, b.company?.trim() || null, game, size,
+         crypto.randomBytes(16).toString("hex"), password]
+      );
+      created.push(p);
+    }
+    await audit("participant_add", { email, games }, admin.email);
+    return NextResponse.json({ ...created[0], password, games });
   } catch (err) {
     if (err.code === "23505")
       return NextResponse.json({ error: "Bu e-posta bu oyuna zaten kayıtlı" }, { status: 400 });
