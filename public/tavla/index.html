@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FIBA Oyunları — Tavla</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1e1913; }
+  #loading {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #ede5d8; font-family: -apple-system, sans-serif; font-size: 15px;
+  }
+</style>
+<script src="wasm_exec.js"></script>
+</head>
+<body>
+<div id="loading">🎲 Tavla yükleniyor…</div>
+<script>
+  const go = new Go();
+  WebAssembly.instantiateStreaming(fetch("boxcars.wasm"), go.importObject)
+    .then((r) => {
+      document.getElementById("loading").remove();
+      go.run(r.instance);
+    })
+    .catch((err) => {
+      document.getElementById("loading").textContent = "Yükleme hatası: " + err;
+    });
+</script>
+</body>
+</html>

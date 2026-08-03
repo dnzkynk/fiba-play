@@ -1,0 +1,132 @@
+import { notFound } from "next/navigation";
+import { isAdmin } from "@/lib/auth";
+import { tournamentWithMatches, roundName, STATUS_TR, T_STATUS_TR } from "@/lib/queries";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge, STATUS_VARIANT } from "@/components/ui/badge";
+import { AdminLoginForm, MatchControls, SwapForm, TournamentScheduleForm } from "../../ui";
+import { ensureWatcher } from "@/lib/watcher";
+import { AutoRefresh } from "@/app/refresh";
+import { q } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminTournament({ params }) {
+  if (!(await isAdmin())) return <AdminLoginForm />;
+  ensureWatcher();
+  const { id } = await params;
+  const t = await tournamentWithMatches(parseInt(id, 10));
+  if (!t) notFound();
+
+  // Kura düzeltme: 1. turda oyunu henüz başlamamış maçlardaki oyuncular takas edilebilir
+  const swappable = await q(
+    `SELECT p.id, p.full_name, p.company FROM matches m
+     JOIN participants p ON p.id IN (m.p1_id, m.p2_id)
+     WHERE m.tournament_id = $1 AND m.round = 1
+       AND m.status IN ('pending', 'scheduled') AND m.game_id IS NULL
+     ORDER BY p.full_name`,
+    [t.id]
+  );
+
+  return (
+    <>
+      <AutoRefresh seconds={20} />
+      <a className="text-sm text-stone-500 hover:text-stone-900" href="/admin">← Panele dön</a>
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {t.game === "chess" ? "♟" : "🎲"} {t.name}
+        </h1>
+        <Badge variant={STATUS_VARIANT[t.status]}>{T_STATUS_TR[t.status]}</Badge>
+        <a className="text-sm font-medium text-stone-600 hover:underline" href={`/t/${t.id}`} target="_blank">
+          Fikstür görünümü ↗
+        </a>
+      </div>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Turnuva programı</CardTitle>
+          <p className="text-sm text-stone-500">
+            1. turun saatini ve tur aralığını belirleyin — oynanmamış tüm maçların saatleri otomatik yazılır,
+            saati gelen maçın linki kendiliğinden üretilir. Tek maçı aşağıdan ayrıca kaydırabilirsiniz.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <TournamentScheduleForm
+            tournamentId={t.id}
+            startsAt={t.starts_at?.toISOString?.() ?? t.starts_at}
+            intervalHours={t.round_interval_hours}
+          />
+        </CardContent>
+      </Card>
+
+      {swappable.length >= 2 && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Kura düzeltme</CardTitle>
+            <p className="text-sm text-stone-500">
+              Oyunu başlamamış 1. tur maçlarındaki iki oyuncunun yerini değiştirir (örn. aynı şirketten iki kişi eşleşmesin diye).
+            </p>
+          </CardHeader>
+          <CardContent>
+            <SwapForm tournamentId={t.id} players={swappable} />
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="mt-6 flex flex-col gap-5">
+        {t.rounds.map((matches, ri) => {
+          const playable = matches.filter((m) => m.p1_id || m.p2_id);
+          if (!playable.length) return null;
+          return (
+            <Card key={ri}>
+              <CardHeader className="flex-row items-baseline justify-between">
+                <CardTitle>{roundName(ri, t.rounds.length)}</CardTitle>
+                {t.starts_at && (
+                  <span className="text-xs font-medium text-indigo-600">
+                    🕐 {new Date(new Date(t.starts_at).getTime() + ri * t.round_interval_hours * 3600_000)
+                      .toLocaleString("tr-TR", { dateStyle: "medium", timeStyle: "short" })}
+                  </span>
+                )}
+              </CardHeader>
+              <CardContent className="divide-y divide-stone-100">
+                {playable.map((m) => (
+                  <div key={m.id} className="py-3.5 first:pt-0 last:pb-0">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="font-medium">{m.p1_name ?? "—"}</span>
+                      <span className="text-xs text-stone-400">vs</span>
+                      <span className="font-medium">{m.p2_name ?? "—"}</span>
+                      <Badge variant={STATUS_VARIANT[m.status]}>{STATUS_TR[m.status]}</Badge>
+                      {m.scheduled_at && m.status === "scheduled" && (
+                        <span className="text-xs text-stone-500">
+                          🕐 {new Date(m.scheduled_at).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" })}
+                        </span>
+                      )}
+                      {m.status === "live" && (
+                        <span className="text-xs text-stone-500">
+                          Katılım: {m.p1_joined_at ? "✅" : "⏳"} {m.p1_name} · {m.p2_joined_at ? "✅" : "⏳"} {m.p2_name}
+                          {t.game === "tavla" && m.room_password && (
+                            <> · Oda: <code className="rounded bg-stone-100 px-1 py-0.5 font-mono">{m.game_id}</code>{" "}
+                            parola <code className="rounded bg-stone-100 px-1 py-0.5 font-mono">{m.room_password}</code></>
+                          )}
+                        </span>
+                      )}
+                      {m.rematch_count > 0 && (
+                        <Badge variant="info">Rövanş #{m.rematch_count}</Badge>
+                      )}
+                      {m.status === "done" && (
+                        <span className="text-xs text-stone-500">
+                          → <strong className="text-stone-800">{m.winner_name ?? "Beraberlik"}</strong>
+                          {m.result_detail === "bye" ? " (maçsız)" : m.result_via === "forfeit" ? " (hükmen)" : m.result_detail ? ` (${m.result_detail})` : ""}
+                        </span>
+                      )}
+                    </div>
+                    <MatchControls match={m} />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </>
+  );
+}

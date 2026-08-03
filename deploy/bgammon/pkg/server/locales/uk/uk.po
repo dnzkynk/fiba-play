@@ -1,0 +1,352 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-10-27 10:20+0000\n"
+"Last-Translator: SomeTr <sometr@noreply.codeberg.org>\n"
+"Language-Team: Ukrainian <https://translate.codeberg.org/projects/bgammon/"
+"server/uk/>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 5.13.3\n"
+
+msgid "%[1]s (%[2]d point)"
+msgid_plural "%[1]s (%[2]d points)"
+msgstr[0] "%[1]s (%[2]d бал)"
+msgstr[1] "%[1]s (%[2]d бали)"
+msgstr[2] "%[1]s (%[2]d балів)"
+
+msgid "%s accepted double."
+msgstr "%s приймає подвоєння."
+
+msgid "%s declined double offer."
+msgstr "%s відхиляє подвоєння."
+
+msgid "%s disconnected."
+msgstr "%s від'єднується."
+
+msgid "%s is online."
+msgstr "%s входить у мережу."
+
+msgid "%[1]s offers a double (%[2]d point)."
+msgid_plural "%[1]s offers a double (%[2]d points)."
+msgstr[0] "%[1]s пропонує подвоєння (%[2]d бал)."
+msgstr[1] "%[1]s пропонує подвоєння (%[2]d бали)."
+msgstr[2] "%[1]s пропонує подвоєння (%[2]d балів)."
+
+msgid "%s resigned."
+msgstr "%s капітулює."
+
+msgid "Accepted double."
+msgstr "Прийнято подвоєння."
+
+msgid "Achievement unlocked: %s"
+msgstr "Досягнення здобуто: %s"
+
+msgid "Blocked opponent from entering for 7 consecutive turns"
+msgstr "Не давати увійти опоненту 7 ходів підряд"
+
+msgid "Boogie Wonderland"
+msgstr "Бугі Вондерленд"
+
+msgid ""
+"Bots are not allowed to join player matches. Please create a match instead."
+msgstr ""
+"Боти не можуть приєднуватися до матчів гравців. Натомість, будь ласка, "
+"створіть матч."
+
+msgid "Choose which doubles you want for your acey-deucey."
+msgstr "Виберіть, які дублі Ви хочете для Вашого Ейсі-дусі."
+
+msgid "Command ignored: You are spectating this match."
+msgstr "Команду проігноровано: Ви - глядач."
+
+msgid ""
+"Connect with other players and stay up to date on the latest changes. Visit "
+"%s"
+msgstr ""
+"Доєднайтеся до інших гравців і залишайтеся в курсі останніх змін. Відвідайте "
+"%s"
+
+msgid "Created match: %s"
+msgstr "Створено матч: %s"
+
+msgid "Declined double offer."
+msgstr "Відхилено подвоєння."
+
+msgid "Double offered to opponent (%d point)."
+msgid_plural "Double offered to opponent (%d points)."
+msgstr[0] "Запропоновано подвоєння (%d бал)."
+msgstr[1] "Запропоновано подвоєння (%d бали)."
+msgstr[2] "Запропоновано подвоєння (%d балів)."
+
+msgid "Double Trouble"
+msgstr "Подвійні проблеми"
+
+msgid ""
+"Due to ongoing abuse, only registered users may connect. Please register an "
+"account or try again later."
+msgstr ""
+"У зв'язку зі зловживаннями, лише зареєстровані користувачі можуть "
+"приєднуватися. Будь ласка, зареєструйтеся або спробуйте пізніше."
+
+msgid "Due to ongoing abuse, registration is disabled. Please try again later."
+msgstr ""
+"Через поточні зловживання реєстрацію відключено. Будь ласка, спробуйте ще "
+"раз пізніше."
+
+msgid ""
+"Due to ongoing abuse, some actions are restricted to registered users only. "
+"Please log in or register to avoid interruptions."
+msgstr ""
+"Через поточні зловживання деякі дії доступні лише зареєстрованим "
+"користувачам. Будь ласка, увійдіть або зареєструйтеся, щоб уникнути перебоїв."
+
+msgid ""
+"Due to ongoing abuse, some actions may become restricted to registered users "
+"only. Please log in or register to avoid interruptions."
+msgstr ""
+"Через поточні зловживання деякі дії можуть стати доступними лише для "
+"зареєстрованих користувачів. Будь ласка, увійдіть або зареєструйтеся, щоб "
+"уникнути перебоїв."
+
+msgid "Failed to change password."
+msgstr "Не вдалося змінити пароль."
+
+msgid "Failed to change password: incorrect existing password."
+msgstr "Не вдалося змінити пароль: неправильний поточний пароль."
+
+msgid "Failed to change password: you are logged in as a guest."
+msgstr "Не вдалося змінити пароль: Ви увійшли як гість."
+
+msgid "Failed to create match: %s"
+msgstr "Не вдалося створити матч: %s"
+
+msgid "Failed to log in: %s"
+msgstr "Не вдалося увійти: %s"
+
+msgid ""
+"Failed to register: Invalid username: must contain at least one non-numeric "
+"character."
+msgstr ""
+"Невдалося зареєструватися: Недопустимий логін: повинен містити хоч один "
+"нецифровий символ."
+
+msgid "Flawless Victory"
+msgstr "Бездоганна перемога"
+
+msgid "Good Game"
+msgstr "Гарна гра"
+
+msgid "Hidden Layer"
+msgstr "Прихований шар"
+
+msgid "Illegal move."
+msgstr "Заборонений хід."
+
+msgid "Invalid password."
+msgstr "Недопустимий пароль."
+
+msgid "Invalid replay ID provided."
+msgstr "Недопустимий ідентифікатор повтору."
+
+msgid "Invalid username: must be %d characters or less."
+msgstr "Недопустимий логін: максимальна кількість символів: %d."
+
+msgid "Invalid username: must contain at least one non-numeric character."
+msgstr "Недопустимий логін: повинен містити хоч один нецифровий символ."
+
+msgid "Invalid username: must contain only letters, numbers and underscores."
+msgstr ""
+"Недопустимий логін: повинен містити лише літери, цифри та підкреслювання."
+
+msgid "It is not your turn to move."
+msgstr "Ще не Ваш час ходити."
+
+msgid "It is not your turn to roll."
+msgstr "Ще не Ваш час кидати."
+
+msgid "It is not your turn."
+msgstr "Ще не Ваш хід."
+
+msgid "Joined match: %s"
+msgstr "Приєднано до матчу: %s"
+
+msgid "Left completed match."
+msgstr "Покинуто завершений матч."
+
+msgid "Match not found."
+msgstr "Матч не знайдено."
+
+msgid "Message not sent: There is no one else in the match."
+msgstr "Повідомлення не відправлено: Більше нікого немає, окрім Вас."
+
+msgid "Message not sent: You are not currently in a match."
+msgstr "Повідомлення не відправлено: Ви не у грі."
+
+msgid "Mind Over Matter"
+msgstr "Розум проти матерії"
+
+msgid "Network Effect"
+msgstr "Мережевий ефект"
+
+msgid ""
+"No account was found with the provided username and password. To log in as a "
+"guest, do not enter a password."
+msgstr ""
+"Не було знайдено акаунта з такими логіном і паролем. Щоб увійти як гість, не "
+"вводьте пароль."
+
+msgid "No replay was recorded for that game."
+msgstr "Повтор не було записано для цієї гри."
+
+msgid "Password changed successfully."
+msgstr "Пароль успішно змінено."
+
+msgid "Please enter an email, username and password."
+msgstr "Будь ласка, введіть електронну поштову скриньку, логін та пароль."
+
+msgid "Please finish your match as soon as possible."
+msgstr "Будь ласка, завершіть свій матч якомога швидше."
+
+msgid "Please leave the match you are in before creating another."
+msgstr "Будь ласка, покиньте матч, у якому Ви зараз, перш ніж створювати інший."
+
+msgid "Please leave the match you are in before joining another."
+msgstr ""
+"Будь ласка, покиньте матч, у якому Ви зараз, перш ніж приєднатися до іншого."
+
+msgid "Rejoined match: %s"
+msgstr "Повторно приєднано до матчу: %s"
+
+msgid "Rematch offer sent."
+msgstr "Відправлено запит на реванш."
+
+msgid "Resigned."
+msgstr "Капітульовано."
+
+msgid "Scored a backgammon against BOT_tabula"
+msgstr "Виграти кокс у грі проти BOT_tabula"
+
+msgid "Scored a backgammon against BOT_wildbg"
+msgstr "Виграти кокс у грі проти BOT_wildbg"
+
+msgid "Scored a backgammon against a human"
+msgstr "Виграти кокс у грі проти людини"
+
+msgid "Scored a gammon against BOT_tabula"
+msgstr "Виграти марс у грі проти BOT_tabula"
+
+msgid "Scored a gammon against BOT_wildbg"
+msgstr "Виграти марс у грі проти BOT_wildbg"
+
+msgid "Scored a gammon against a human"
+msgstr "Виграти марс у грі проти людини"
+
+msgid "Scored a normal win against BOT_tabula"
+msgstr "Виграти оїн у грі проти BOT_tabula"
+
+msgid "Scored a normal win against BOT_wildbg"
+msgstr "Виграти оїн у грі проти BOT_wildbg"
+
+msgid "Scored a normal win against a human"
+msgstr "Виграти оїн у грі проти людини"
+
+msgid "SERVER BROADCAST:"
+msgstr "ПОВІДОМЛЕННЯ ВІД СЕРВЕРА:"
+
+msgid "Server error"
+msgstr "Помилка сервера"
+
+msgid "That username is already in use."
+msgstr "Цей логін уже зайнято."
+
+msgid "The following legal moves are available: %s"
+msgstr "Доступні такі ходи: %s"
+
+msgid "The match you are in is still in progress."
+msgstr "Гра, у якій Ви зараз, ще йде."
+
+msgid "The server is shutting down. Reason: %s"
+msgstr "Сервер вимикається. Причина: %s"
+
+msgid "The server is shutting down in %d minute. Reason:"
+msgid_plural "The server is shutting down in %d minutes. Reason:"
+msgstr[0] "Сервер буде вимкнено через %d хвилину. Причина:"
+msgstr[1] "Сервер буде вимкнено через %d хвилини. Причина:"
+msgstr[2] "Сервер буде вимкнено через %d хвилин. Причина:"
+
+msgid "Transformer"
+msgstr "Трансформер"
+
+msgid "Unknown command: %s"
+msgstr "Невідома команда: %s"
+
+msgid "Waiting for response from opponent."
+msgstr "Очікування на відповідь опонента."
+
+msgid "Weighted Sum"
+msgstr "Зважена сума"
+
+msgid "You are no longer following %s."
+msgstr "Ви більше не слідкуєте за %s."
+
+msgid "You are not allowed to use that command."
+msgstr "Ви не можете використовувати цю команду."
+
+msgid "You are not currently in a match."
+msgstr "Ви не у грі."
+
+msgid "You are now following %s."
+msgstr "Тепер ви слідкуєте за %s."
+
+msgid "You are spectating this match. Chat messages are not relayed."
+msgstr "Ви — глядач. Чат не показується."
+
+msgid "You do not currently hold the doubling cube."
+msgstr "Куб подвоєння наразі не у Вас."
+
+msgid "You have already requested a rematch."
+msgstr "Ви вже надіслали запит на реванш."
+
+msgid "You may not accept the double until your opponent rejoins the match."
+msgstr "Ви не можете прийняти подвоєння, допоки Ваш опонент не повернеться."
+
+msgid "You may not double at this time."
+msgstr "Ви не можете подвоїти зараз."
+
+msgid "You may not double until your opponent rejoins the match."
+msgstr "Ви не можете подвоїти, допоки Ваш опонент не повернеться."
+
+msgid "You may not move until your opponent rejoins the match."
+msgstr "Ви не можете ходити, допоки Ваш опонент не повернеться."
+
+msgid "You may not resign until it is your turn."
+msgstr "Ви не можете здатися не у свій хід."
+
+msgid "You may not resign until your opponent rejoins the match."
+msgstr "Ви не можете капітулювати, допоки Ваш опонент не повернеться."
+
+msgid "You may not roll until your opponent rejoins the match."
+msgstr "Ви не можете кинути, допоки Ваш опонент не повернеться."
+
+msgid "You must login before using other commands."
+msgstr "Ви мусите увійти перед тим, як використовувати інші команди."
+
+msgid "You must roll first."
+msgstr "Ви мусите кинути першими."
+
+msgid ""
+"You must wait until your opponent rejoins the match before continuing the "
+"game."
+msgstr ""
+"Ви повинні зачекати, допоки Ваш опонент не повернеться, перед тим, як "
+"продовжувати гру."
+
+msgid "Your opponent left the match."
+msgstr "Ваш опонент покинув матч."
+
+msgid "Your opponent would like to play again."
+msgstr "Ваш опонент хоче зіграти ще раз."
