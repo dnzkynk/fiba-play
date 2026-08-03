@@ -30,7 +30,8 @@ export async function GET(req, { params }) {
 
   if (m.tgame === "tavla") {
     const me = myRows.find((r) => r.id === (isP1 ? m.p1_id : m.p2_id));
-    const url = new URL(m.game_url);
+    // İstemci adresi her tıklamada güncel ayardan okunur (maç, env değişmeden önce başlatılmış olabilir)
+    const url = new URL(process.env.BGAMMON_CLIENT_URL || m.game_url);
     url.searchParams.set("username", assignedUsername(me));
     if (process.env.BGAMMON_WS_URL) url.searchParams.set("server", process.env.BGAMMON_WS_URL);
     return NextResponse.redirect(url);
