@@ -30,6 +30,22 @@ export async function POST(req) {
   );
   const password = existing?.password ?? generatePassword();
 
+  // Aynı oyunda hâlâ kura bekleyen kaydı varsa tekrar ekleme (çifte kura önlenir);
+  // önceki turnuvası kurulmuş/bitmişse yeni turnuva için tekrar kaydolabilir.
+  for (const game of games) {
+    const waiting = await q(
+      `SELECT 1 FROM participants p WHERE p.email = $1 AND p.game = $2
+         AND NOT EXISTS (SELECT 1 FROM matches m JOIN tournaments t ON t.id = m.tournament_id
+                         WHERE t.game = p.game AND (m.p1_id = p.id OR m.p2_id = p.id)) LIMIT 1`,
+      [email, game]
+    );
+    if (waiting.length)
+      return NextResponse.json(
+        { error: `Bu kişi ${game === "chess" ? "satrançta" : "tavlada"} zaten kura bekliyor` },
+        { status: 400 }
+      );
+  }
+
   try {
     const created = [];
     for (const game of games) {
@@ -44,8 +60,6 @@ export async function POST(req) {
     await audit("participant_add", { email, games }, admin.email);
     return NextResponse.json({ ...created[0], password, games });
   } catch (err) {
-    if (err.code === "23505")
-      return NextResponse.json({ error: "Bu e-posta bu oyuna zaten kayıtlı" }, { status: 400 });
     throw err;
   }
 }

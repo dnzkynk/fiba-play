@@ -51,18 +51,28 @@ export async function POST(req) {
       "SELECT password FROM participants WHERE email = $1 AND password IS NOT NULL LIMIT 1",
       [r.email]
     );
-    const res = await q(
-      `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)
-       ON CONFLICT (email, game) DO UPDATE
-         SET full_name = EXCLUDED.full_name, company = EXCLUDED.company,
-             bracket_size = EXCLUDED.bracket_size,
-             password = COALESCE(participants.password, EXCLUDED.password)
-       RETURNING (xmax = 0) AS is_insert`,
-      [r.fullName, r.email, r.company || null, r.game, r.size,
-       crypto.randomBytes(16).toString("hex"), existing?.password ?? generatePassword()]
+    // Kura bekleyen kaydı varsa güncelle; yoksa yeni kayıt ekle (çoklu turnuva desteği)
+    const [waiting] = await q(
+      `SELECT p.id FROM participants p WHERE p.email = $1 AND p.game = $2
+         AND NOT EXISTS (SELECT 1 FROM matches m JOIN tournaments t ON t.id = m.tournament_id
+                         WHERE t.game = p.game AND (m.p1_id = p.id OR m.p2_id = p.id)) LIMIT 1`,
+      [r.email, r.game]
     );
-    res[0].is_insert ? inserted++ : updated++;
+    if (waiting) {
+      await q(
+        `UPDATE participants SET full_name = $1, company = $2, bracket_size = $3 WHERE id = $4`,
+        [r.fullName, r.company || null, r.size, waiting.id]
+      );
+      updated++;
+    } else {
+      await q(
+        `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        [r.fullName, r.email, r.company || null, r.game, r.size,
+         crypto.randomBytes(16).toString("hex"), existing?.password ?? generatePassword()]
+      );
+      inserted++;
+    }
   }
   await audit("import", { inserted, updated }, admin.email);
   return NextResponse.json({ inserted, updated });

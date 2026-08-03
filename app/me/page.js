@@ -51,6 +51,19 @@ export default async function MePage() {
   const spectate = [...byTournament.values()].filter(
     (m) => !active.some((a) => a.tid === m.tid)
   );
+
+  // Tek elemede derece, kaybedilen turdan bellidir: finalde kaybeden 2.,
+  // yarı finalde elenenler 3.–4., çeyrekte 5.–8. ...
+  function placementOf(tid) {
+    if (finalsWon.has(tid)) return "1.";
+    const mine = matches.filter((m) => m.tid === tid && m.status === "done");
+    const lost = mine.filter((m) => (m.winner_id && !m.i_won) || (!m.winner_id && m.result_detail?.startsWith("iptal")));
+    if (!lost.length) return null;
+    const r = Math.max(...lost.map((m) => m.round));
+    const R = Math.log2(lost[0].bracket_size);
+    if (r === R) return "2.";
+    return `${2 ** (R - r) + 1}.–${2 ** (R - r + 1)}.`;
+  }
   const tavlaPoints = (await getSettings()).tavla_points ?? "3";
 
   return (
@@ -160,6 +173,11 @@ export default async function MePage() {
               <p className="font-semibold">
                 {GAME_ICON[m.tgame]} {m.tname} —{" "}
                 {finalsWon.has(m.tid) ? t("youChampion") : m.tstatus === "finished" ? t(`ts_finished`) : t("spectateTitle")}
+                {placementOf(m.tid) && (
+                  <span className="ml-2 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-700">
+                    {t("placementLabel")}: {placementOf(m.tid)}
+                  </span>
+                )}
               </p>
               <p className="mt-0.5 text-sm text-stone-500">
                 {finalsWon.has(m.tid) ? t("championHint") : m.tstatus !== "finished" ? t("spectateHint") : ""}

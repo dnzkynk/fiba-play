@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS participants (
   bracket_size INT  NOT NULL CHECK (bracket_size IN (8, 16, 32, 64)),
   token        TEXT NOT NULL UNIQUE,          -- iç kullanım (join yönlendirmesi imzası)
   password     TEXT,                          -- admin'in dağıttığı giriş parolası (otomatik üretilir)
-  created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (email, game)                        -- aynı kişi aynı oyuna bir kez; satranç+tavla ikisine ayrı kayıt
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+  -- Aynı kişi aynı oyunda birden fazla turnuvaya katılabilir (uygulama çifte kurayı engeller)
 );
 
 CREATE TABLE IF NOT EXISTS tournaments (
