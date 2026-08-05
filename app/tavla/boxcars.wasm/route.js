@@ -2,7 +2,8 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
-export const dynamic = "force-static";
+// force-static OLMAZ: Accept-Encoding'e göre farklı gövde dönülüyor
+export const dynamic = "force-dynamic";
 
 const ASSET = join(process.cwd(), "assets", "boxcars.wasm");
 
