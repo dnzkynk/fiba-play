@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { q } from "@/lib/db";
 import { currentPlayerRows } from "@/lib/auth";
-import { getT } from "@/lib/i18n";
+import { getT, tournamentTitle } from "@/lib/i18n";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge, STATUS_VARIANT } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -18,7 +18,7 @@ const GAME_ICON = { chess: "♟", tavla: "🎲" };
 export default async function MePage() {
   const myRows = await currentPlayerRows();
   if (!myRows.length) redirect("/login");
-  const { t, locale } = await getT();
+  const { t, locale, lang } = await getT();
   const me = myRows[0];
   const myIds = myRows.map((r) => r.id);
 
@@ -96,7 +96,7 @@ export default async function MePage() {
             <CardContent className="p-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs text-stone-500">
-                  {GAME_ICON[m.tgame]} {m.tname} · {t("round")} {m.round}
+                  {GAME_ICON[m.tgame]} {tournamentTitle(t, lang, m.tgame, m.bracket_size)} · {t("round")} {m.round}
                 </span>
                 <Badge variant={STATUS_VARIANT[m.status]}>{t(`st_${m.status}`)}</Badge>
               </div>
@@ -171,7 +171,7 @@ export default async function MePage() {
           <CardContent className="flex flex-wrap items-center justify-between gap-3 p-5">
             <div>
               <p className="font-semibold">
-                {GAME_ICON[m.tgame]} {m.tname} —{" "}
+                {GAME_ICON[m.tgame]} {tournamentTitle(t, lang, m.tgame, m.bracket_size)} —{" "}
                 {finalsWon.has(m.tid) ? t("youChampion") : m.tstatus === "finished" ? t(`ts_finished`) : t("spectateTitle")}
                 {placementOf(m.tid) && (
                   <span className="ml-2 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-700">

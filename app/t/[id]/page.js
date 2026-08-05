@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { q } from "@/lib/db";
 import { isAdmin, currentPlayerRows } from "@/lib/auth";
 import { tournamentWithMatches } from "@/lib/queries";
-import { getT, roundLabel } from "@/lib/i18n";
+import { getT, roundLabel, tournamentTitle } from "@/lib/i18n";
 import { Badge, STATUS_VARIANT } from "@/components/ui/badge";
 import { AutoRefresh } from "@/app/refresh";
 
@@ -27,7 +27,7 @@ export default async function TournamentPage({ params }) {
 
   const t = await tournamentWithMatches(tid);
   if (!t) notFound();
-  const { t: tr, locale } = await getT();
+  const { t: tr, locale, lang } = await getT();
 
   const [champion] = await q(
     `SELECT p.full_name FROM matches m JOIN participants p ON p.id = m.winner_id
@@ -51,7 +51,7 @@ export default async function TournamentPage({ params }) {
       <AutoRefresh seconds={20} />
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">
-          {t.game === "chess" ? "♟" : "🎲"} {t.name}
+          {t.game === "chess" ? "♟" : "🎲"} {tournamentTitle(tr, lang, t.game, t.bracket_size)}
         </h1>
         <Badge variant={STATUS_VARIANT[t.status]}>{tr(`ts_${t.status}`)}</Badge>
         {champion && <Badge variant="success">🏆 {tr("champion")}: {champion.full_name}</Badge>}

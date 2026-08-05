@@ -16,6 +16,7 @@ export async function POST(req) {
     return NextResponse.json({ error: "E-posta veya parola hatalı" }, { status: 401 });
   }
   const store = await cookies();
+  store.delete("fiba_user"); // aynı tarayıcıda admin+oyuncu karışmasın
   store.set("fiba_admin", makeSession(`admin:${admin.email}`), {
     httpOnly: true,
     sameSite: "lax",
