@@ -115,9 +115,18 @@ func (s *server) handleFirstCommand(cmd serverCommand, keyword string, params []
 			if onlyNumbers.Match(username) {
 				cmd.client.Terminate(gotext.GetD(cmd.client.language, "Invalid username: must contain at least one non-numeric character."))
 				return false
-			} else if s.clientByUsername(username) != nil || s.clientByUsername(append([]byte("Guest_"), username...)) != nil || (!randomUsername && !s.nameAllowed(username)) {
-				cmd.client.Terminate(gotext.GetD(cmd.client.language, "That username is already in use."))
-				return false
+			} else if existing := s.clientByUsername(username); existing != nil || s.clientByUsername(append([]byte("Guest_"), username...)) != nil || (!randomUsername && !s.nameAllowed(username)) {
+				// FIBA yaması: misafir adları için eski (hayalet) bağlantıyı düşür,
+				// yenisine izin ver — sayfa yenileme her koşulda koltuğa geri oturtur.
+				if existing == nil {
+					existing = s.clientByUsername(append([]byte("Guest_"), username...))
+				}
+				if existing != nil && existing.accountID <= 0 {
+					existing.Terminate("Replaced by a new connection.")
+				} else {
+					cmd.client.Terminate(gotext.GetD(cmd.client.language, "That username is already in use."))
+					return false
+				}
 			} else if (!bytes.HasPrefix(username, []byte("guest_")) && len(string(username)) > maxUsernameLength) || len(string(username)) > maxUsernameLength+6 {
 				cmd.client.Terminate(fmt.Sprintf(gotext.GetD(cmd.client.language, "Invalid username: must be %d characters or less."), maxUsernameLength))
 				return false

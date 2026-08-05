@@ -58,7 +58,8 @@ func autoJoinFromPortal(s *server, c *serverClient) {
 			s.gamesLock.RLock()
 			defer s.gamesLock.RUnlock()
 			for _, g := range s.games {
-				if string(g.name) == em.Room && g.Winner == 0 {
+				// Parolası eşleşmeyen oda bayattır (önceki denemeden kalmıştır) — yok say
+				if string(g.name) == em.Room && g.Winner == 0 && string(g.password) == em.Password {
 					return g.id
 				}
 			}
