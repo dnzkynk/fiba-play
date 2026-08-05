@@ -66,7 +66,7 @@ func autoJoinFromPortal(s *server, c *serverClient) {
 		}
 
 		preferCreate := em.Action == "create"
-		for attempt := 0; attempt < 60; attempt++ {
+		for attempt := 0; attempt < 90; attempt++ {
 			if c.terminating {
 				return
 			}
@@ -76,11 +76,11 @@ func autoJoinFromPortal(s *server, c *serverClient) {
 			}
 			if id := findRoom(); id > 0 {
 				c.commands <- []byte(fmt.Sprintf("join %d %s", id, em.Password))
-			} else if preferCreate || attempt >= 2 {
+			} else if preferCreate || attempt >= 1 {
 				log.Printf("fiba auto-create: %s -> %s", c.name, em.Room)
 				c.commands <- []byte(fmt.Sprintf("create private %s %d 0 %s", em.Password, em.Points, em.Room))
 			}
-			time.Sleep(3 * time.Second)
+			time.Sleep(2 * time.Second)
 		}
 	}()
 }
