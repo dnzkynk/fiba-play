@@ -47,7 +47,7 @@ export default async function TournamentsPage() {
         <CardContent>
           {tournaments.length === 0 ? (
             <div className="rounded-lg border border-dashed border-stone-300 p-10 text-center text-sm text-stone-500">
-              Henüz turnuva yok. Önce <a className="font-medium text-indigo-600" href="/admin/participants">Katılımcılar</a> sekmesinden
+              Henüz turnuva yok. Önce <a className="font-medium text-fiba-600" href="/admin/participants">Katılımcılar</a> sekmesinden
               kişileri ekleyin, sonra buradan kurayı çekin.
             </div>
           ) : (
@@ -64,7 +64,7 @@ export default async function TournamentsPage() {
                     <TD>{t.live_count > 0 ? <Badge variant="warning">{t.live_count}</Badge> : <span className="text-stone-300">—</span>}</TD>
                     <TD>{t.champion ? <span className="font-medium text-emerald-700">🏆 {t.champion}</span> : <span className="text-stone-300">—</span>}</TD>
                     <TD className="text-right">
-                      <a className="text-sm font-medium text-indigo-600 hover:underline" href={`/admin/t/${t.id}`}>Yönet →</a>
+                      <a className="text-sm font-medium text-fiba-600 hover:underline" href={`/admin/t/${t.id}`}>Yönet →</a>
                     </TD>
                   </TR>
                 ))}

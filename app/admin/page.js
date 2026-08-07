@@ -97,7 +97,7 @@ export default async function AdminDashboard() {
                       {m.game === "chess" && m.game_url && m.p1_joined_at && m.p2_joined_at && (
                         <a className="font-medium text-amber-700" href={m.game_url} target="_blank" rel="noreferrer">İzle ↗</a>
                       )}
-                      <a className="font-medium text-indigo-600" href={`/admin/t/${m.tournament_id}`}>Yönet →</a>
+                      <a className="font-medium text-fiba-600" href={`/admin/t/${m.tournament_id}`}>Yönet →</a>
                     </span>
                   </div>
                 ))}
@@ -143,14 +143,14 @@ export default async function AdminDashboard() {
                   return (
                     <a key={t.id} href={`/admin/t/${t.id}`} className="group no-underline">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium text-stone-800 group-hover:text-indigo-700">{ICON[t.game]} {t.name}</span>
+                        <span className="font-medium text-stone-800 group-hover:text-fiba-700">{ICON[t.game]} {t.name}</span>
                         <span className="flex items-center gap-2">
                           <Badge variant={STATUS_VARIANT[t.status]}>{T_STATUS_TR[t.status]}</Badge>
                           <span className="text-xs tabular-nums text-stone-500">{t.done_count}/{t.total_count}</span>
                         </span>
                       </div>
                       <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-stone-100">
-                        <div className="h-full rounded-full bg-indigo-500 transition-all" style={{ width: `${pct}%` }} />
+                        <div className="h-full rounded-full bg-fiba-500 transition-all" style={{ width: `${pct}%` }} />
                       </div>
                     </a>
                   );

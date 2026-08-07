@@ -45,7 +45,7 @@ export default async function AuditPage() {
                 <TD className="whitespace-nowrap tabular-nums text-stone-500">
                   {new Date(r.created_at).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "medium" })}
                 </TD>
-                <TD className={r.actor === "otomatik" ? "text-stone-400" : "text-indigo-700"}>{r.actor}</TD>
+                <TD className={r.actor === "otomatik" ? "text-stone-400" : "text-fiba-700"}>{r.actor}</TD>
                 <TD className="font-medium">{ACTION_TR[r.action] ?? r.action}</TD>
                 <TD><code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{JSON.stringify(r.detail)}</code></TD>
               </TR>

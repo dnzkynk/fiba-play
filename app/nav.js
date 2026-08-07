@@ -8,7 +8,7 @@ export function NavLink({ href, children }) {
     <a href={href}
       className={`rounded-md px-3 py-1.5 text-sm font-medium no-underline transition-colors ${
         active
-          ? "bg-indigo-50 text-indigo-700"
+          ? "bg-fiba-50 text-fiba-700"
           : "text-stone-500 hover:bg-stone-50 hover:text-stone-900"
       }`}>
       {children}
@@ -26,7 +26,7 @@ export function UserMenu({ name, subtitle, logoutLabel }) {
     .toUpperCase();
   return (
     <div className="flex items-center gap-2.5 border-l border-stone-200 pl-3">
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-indigo-600 to-violet-600 text-xs font-semibold text-white">
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-fiba-600 to-fibagreen-500 text-xs font-semibold text-white">
         {initials}
       </div>
       <div className="hidden leading-tight sm:block">
@@ -64,7 +64,7 @@ export function LangSwitcher({ lang }) {
       {["tr", "en"].map((l) => (
         <button key={l}
           className={`cursor-pointer px-2 py-1 uppercase transition-colors ${
-            lang === l ? "bg-indigo-600 text-white" : "bg-white text-stone-400 hover:bg-stone-50 hover:text-stone-700"
+            lang === l ? "bg-fiba-600 text-white" : "bg-white text-stone-400 hover:bg-stone-50 hover:text-stone-700"
           }`}
           onClick={() => setLang(l)}>
           {l}

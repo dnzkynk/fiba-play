@@ -21,7 +21,7 @@ export function AdminTabs() {
           <a key={t.href} href={t.href}
             className={`whitespace-nowrap border-b-2 px-3.5 py-2 text-sm font-medium no-underline transition-colors ${
               active
-                ? "border-indigo-600 text-indigo-700"
+                ? "border-fiba-600 text-fiba-700"
                 : "border-transparent text-stone-500 hover:border-stone-300 hover:text-stone-800"
             }`}>
             {t.label}

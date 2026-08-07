@@ -22,15 +22,15 @@ export function AdminLoginForm() {
   return (
     <div className="flex min-h-[calc(100vh-16rem)] items-center justify-center py-6">
       <Card className="w-full max-w-sm overflow-hidden shadow-xl">
-        <div className="border-b border-indigo-950 bg-indigo-950 p-6 text-center"
+        <div className="border-b border-fiba-950 bg-fiba-950 p-6 text-center"
           style={{
             backgroundImage:
-              "repeating-conic-gradient(rgba(255,255,255,0.05) 0% 25%, transparent 0% 50%), linear-gradient(135deg, #312e81 0%, #1e1b4b 55%, #2e1065 100%)",
+              "repeating-conic-gradient(rgba(255,255,255,0.05) 0% 25%, transparent 0% 50%), linear-gradient(135deg, #0066B3 0%, #003A63 55%, #3F7D23 100%)",
             backgroundSize: "40px 40px, 100% 100%",
           }}>
           <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-lg text-white backdrop-blur">🛠</div>
           <CardTitle className="text-lg text-white">Yönetim Paneli</CardTitle>
-          <CardDescription className="mt-1 text-indigo-300">
+          <CardDescription className="mt-1 text-fiba-300">
             Organizasyon ekibine özel alan
           </CardDescription>
         </div>
@@ -99,7 +99,7 @@ export function AddParticipantForm() {
           <div className="flex h-9 items-center gap-3 rounded-md border border-stone-300 bg-white px-3">
             {[["chess", "♟ Satranç"], ["tavla", "🎲 Tavla"]].map(([key, label]) => (
               <label key={key} className="flex cursor-pointer items-center gap-1.5 text-sm font-normal text-stone-700">
-                <input type="checkbox" className="accent-indigo-600" checked={games[key]}
+                <input type="checkbox" className="accent-fiba-600" checked={games[key]}
                   onChange={(e) => setGames({ ...games, [key]: e.target.checked })} />
                 {label}
               </label>
@@ -462,7 +462,7 @@ export function AdminsManager({ admins, myId }) {
             <span className="font-medium">{a.full_name}</span>
             <span className="text-stone-500">{a.email}</span>
             <code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{a.password}</code>
-            {a.id === myId && <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">sen</span>}
+            {a.id === myId && <span className="rounded-full bg-fiba-50 px-2 py-0.5 text-[11px] font-semibold text-fiba-700">sen</span>}
             {a.id !== myId && (
               <Button variant="destructive" size="sm" className="ml-auto" onClick={() => remove(a.id)}>Sil</Button>
             )}

@@ -159,7 +159,7 @@ export default async function MePage() {
                 </div>
               )}
               <p className="mt-4 text-xs">
-                <a className="font-medium text-indigo-600 hover:text-indigo-800" href={`/t/${m.tid}`}>{t("seeBracket")}</a>
+                <a className="font-medium text-fiba-600 hover:text-fiba-800" href={`/t/${m.tid}`}>{t("seeBracket")}</a>
               </p>
             </CardContent>
           </Card>
@@ -174,7 +174,7 @@ export default async function MePage() {
                 {GAME_ICON[m.tgame]} {tournamentTitle(t, lang, m.tgame, m.bracket_size)} —{" "}
                 {finalsWon.has(m.tid) ? t("youChampion") : m.tstatus === "finished" ? t(`ts_finished`) : t("spectateTitle")}
                 {placementOf(m.tid) && (
-                  <span className="ml-2 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-700">
+                  <span className="ml-2 rounded-full bg-fiba-50 px-2.5 py-0.5 text-xs font-bold text-fiba-700">
                     {t("placementLabel")}: {placementOf(m.tid)}
                   </span>
                 )}

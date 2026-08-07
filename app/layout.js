@@ -26,11 +26,11 @@ export default async function RootLayout({ children }) {
               {logo ? (
                 <img src={logo} alt="" className="h-9 w-auto" />
               ) : (
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-indigo-600 to-violet-600 text-base text-white shadow-sm">♟</span>
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-fiba-600 to-fibagreen-500 text-base text-white shadow-sm">♟</span>
               )}
               <span className="leading-tight">
                 <span className="block text-[15px] font-bold tracking-tight text-stone-900">{brand}</span>
-                <span className="hidden text-[11px] font-medium text-indigo-500 sm:block">2026</span>
+                <span className="hidden text-[11px] font-medium text-fiba-500 sm:block">2026</span>
               </span>
             </a>
 

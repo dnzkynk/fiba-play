@@ -79,7 +79,7 @@ export default async function AdminTournament({ params }) {
               <CardHeader className="flex-row items-baseline justify-between">
                 <CardTitle>{roundName(ri, t.rounds.length)}</CardTitle>
                 {t.starts_at && (
-                  <span className="text-xs font-medium text-indigo-600">
+                  <span className="text-xs font-medium text-fiba-600">
                     🕐 {new Date(new Date(t.starts_at).getTime() + ri * t.round_interval_hours * 3600_000)
                       .toLocaleString("tr-TR", { dateStyle: "medium", timeStyle: "short" })}
                   </span>
