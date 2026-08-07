@@ -378,8 +378,12 @@ export function MatchControls({ match }) {
       )}
       {m.status === "live" && (
         <>
-          <a className="inline-flex h-8 items-center rounded-md border border-stone-300 bg-white px-3 text-xs font-medium shadow-sm hover:bg-stone-100"
-            href={m.game_url} target="_blank" rel="noreferrer">İzle ↗</a>
+          {m.p1_joined_at && m.p2_joined_at ? (
+            <a className="inline-flex h-8 items-center rounded-md border border-stone-300 bg-white px-3 text-xs font-medium shadow-sm hover:bg-stone-100"
+              href={m.game_url} target="_blank" rel="noreferrer">İzle ↗</a>
+          ) : (
+            <span className="text-xs text-stone-400">İzleme, iki oyuncu da girince açılır</span>
+          )}
           <Button variant="outline" size="sm"
             onClick={() => confirm(`${m.p1_name} kazandı olarak işaretlensin mi?`) &&
               patchMatch(m.id, { action: "result", winnerId: m.p1_id }).then(done)}>

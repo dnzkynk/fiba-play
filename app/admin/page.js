@@ -94,7 +94,7 @@ export default async function AdminDashboard() {
                     <span className="text-xs text-stone-400">· Tur {m.round}</span>
                     <span className="ml-auto flex items-center gap-2 text-xs">
                       <span title="katılım">{m.p1_joined_at ? "✅" : "⏳"}{m.p2_joined_at ? "✅" : "⏳"}</span>
-                      {m.game === "chess" && m.game_url && (
+                      {m.game === "chess" && m.game_url && m.p1_joined_at && m.p2_joined_at && (
                         <a className="font-medium text-amber-700" href={m.game_url} target="_blank" rel="noreferrer">İzle ↗</a>
                       )}
                       <a className="font-medium text-indigo-600" href={`/admin/t/${m.tournament_id}`}>Yönet →</a>

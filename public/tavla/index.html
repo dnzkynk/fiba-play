@@ -41,6 +41,17 @@
     setTimeout(() => overlay.classList.add("hidden"), 300);
   };
 
+  // Bağlantı denemeleri tükendiğinde: sessiz menüye düşmek yerine net hata + tekrar dene
+  window.fibaConnectFailed = () => {
+    msg("Bağlantı kurulamadı");
+    document.getElementById("bar").style.background = "#f87171";
+    const sub = document.getElementById("sub");
+    sub.innerHTML = "Ağ bağlantısı oyun sunucusuna ulaşamadı. " +
+      "<button onclick=\"location.reload()\" style=\"margin-top:10px;display:block;margin-inline:auto;" +
+      "padding:8px 18px;border:0;border-radius:8px;background:#818cf8;color:#fff;font-size:14px;" +
+      "font-weight:600;cursor:pointer\">Tekrar dene</button>";
+  };
+
   (async () => {
     try {
       // WASM'ı ilerleme göstererek indir

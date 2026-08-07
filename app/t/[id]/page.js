@@ -73,7 +73,7 @@ export default async function TournamentPage({ params }) {
                 <PlayerRow name={m.p2_name} isWinner={m.winner_id === m.p2_id} decided={!!m.winner_id} />
                 <div className="flex flex-wrap items-center gap-2 border-t border-stone-100 bg-stone-50 px-3 py-1.5 text-[11px] text-stone-500">
                   <Badge variant={STATUS_VARIANT[m.status]} className="text-[10px]">{tr(`st_${m.status}`)}</Badge>
-                  {m.status === "live" && m.game_url && (
+                  {m.status === "live" && m.game_url && t.game === "chess" && m.p1_joined_at && m.p2_joined_at && (
                     <a className="font-medium text-amber-700 hover:underline" href={m.game_url} target="_blank" rel="noreferrer">
                       {tr("watchLive")}
                     </a>

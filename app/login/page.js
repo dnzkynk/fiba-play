@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { isAdmin, currentPlayerEmail } from "@/lib/auth";
 import { getT } from "@/lib/i18n";
 import { PlayerLoginForm } from "./ui";
+import { brandLogoPath } from "@/lib/brand";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,7 @@ export default async function LoginPage() {
     noPassword: t("noPassword"),
   };
   const bullets = [t("heroBullet1"), t("heroBullet2"), t("heroBullet3")];
+  const logo = brandLogoPath();
 
   return (
     <div className="flex min-h-[calc(100vh-16rem)] items-center justify-center py-6">
@@ -32,7 +34,7 @@ export default async function LoginPage() {
             backgroundSize: "56px 56px, 100% 100%",
           }}>
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-lg backdrop-blur">♟</span>
+            {logo ? <img src={logo} alt="" className="h-10 w-auto" /> : <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-lg backdrop-blur">♟</span>}
             <span className="text-lg font-bold tracking-tight">
               FIBA {lang === "en" ? "Games" : "Oyunları"} <span className="font-normal text-indigo-300">2026</span>
             </span>
