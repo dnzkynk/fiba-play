@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { isAdmin, currentPlayerEmail } from "@/lib/auth";
 import { getT } from "@/lib/i18n";
 import { PlayerLoginForm } from "./ui";
-import { brandLogoPath } from "@/lib/brand";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +18,6 @@ export default async function LoginPage() {
     noPassword: t("noPassword"),
   };
   const bullets = [t("heroBullet1"), t("heroBullet2"), t("heroBullet3")];
-  const logo = brandLogoPath();
 
   return (
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center py-4">
@@ -27,14 +25,7 @@ export default async function LoginPage() {
 
         {/* Marka paneli */}
         <div className="relative hidden flex-col justify-between bg-linear-to-br from-fiba-600 via-fiba-800 to-fiba-950 p-10 text-white lg:col-span-3 lg:flex">
-          <div className="flex items-center gap-2">
-            {logo && (
-              <span className="rounded-md bg-white px-2.5 py-1.5">
-                <img src={logo} alt="Fiba" className="h-6 w-auto" />
-              </span>
-            )}
-            <span className="text-sm font-semibold text-fiba-200">FIBA Holding</span>
-          </div>
+          <p className="text-sm font-semibold tracking-wide text-fiba-200">FIBA Holding</p>
 
           <div className="flex flex-col items-center py-6 text-center">
             <img src="/fibaoyunlari-logo.png" alt="FIBA Oyunları"
