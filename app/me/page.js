@@ -67,6 +67,10 @@ export default async function MePage() {
 
       {/* Karşılama bandı */}
       <section className="relative overflow-hidden rounded-2xl bg-linear-to-r from-fiba-600 via-fiba-800 to-fiba-950 px-6 py-8 text-white shadow-md sm:px-10">
+        <div className="pointer-events-none absolute -right-2 -top-8 hidden md:block">
+          <img src="/satranc-logo.png" alt="" className="inline-block h-44 w-auto -rotate-6 drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)]" />
+          <img src="/tavla-logo.png" alt="" className="-ml-8 inline-block h-44 w-auto rotate-3 drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)]" />
+        </div>
         <h1 className="relative text-2xl font-bold tracking-tight sm:text-3xl">
           {t("hello")}, {me.full_name.split(" ")[0]} 👋
         </h1>

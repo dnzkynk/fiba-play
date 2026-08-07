@@ -50,6 +50,8 @@ export default async function TournamentPage({ params }) {
     <>
       <AutoRefresh seconds={20} />
       <section className="relative overflow-hidden rounded-2xl bg-linear-to-r from-fiba-600 via-fiba-800 to-fiba-950 px-6 py-6 text-white shadow-md sm:px-10">
+        <img src={t.game === "chess" ? "/satranc-logo.png" : "/tavla-logo.png"} alt=""
+          className="pointer-events-none absolute -right-3 -top-6 hidden h-36 w-auto rotate-3 drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)] md:block" />
         <div className="relative flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-bold tracking-tight">
             {t.game === "chess" ? "♟" : "🎲"} {tournamentTitle(tr, lang, t.game, t.bracket_size)}

@@ -23,13 +23,15 @@ export default async function RootLayout({ children }) {
         <div className="h-1 w-full bg-linear-to-r from-fiba-600 via-fiba-400 to-fibagreen-500" />
         <header className="sticky top-0 z-20 border-b border-stone-200 bg-white/90 backdrop-blur-md">
           <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4 sm:px-8">
-            <a href="/" className="flex items-center gap-2.5 no-underline">
+            <a href="/" className="flex items-center gap-2 no-underline">
               {logo ? (
-                <img src={logo} alt={brand} className="h-10 w-auto rounded-lg shadow-sm" />
+                <img src={logo} alt="Fiba" className="h-7 w-auto" />
               ) : (
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-fiba-600 to-fibagreen-500 text-base text-white shadow-sm">♟</span>
               )}
-              <span className="hidden text-[11px] font-semibold text-stone-400 sm:block">2026</span>
+              <span className="pt-1 text-[15px] font-bold tracking-tight text-fiba-700">
+                {lang === "en" ? "Games" : "Oyunları"} <span className="text-[11px] font-semibold text-stone-400">2026</span>
+              </span>
             </a>
 
             <nav className="ml-auto flex items-center gap-1">
