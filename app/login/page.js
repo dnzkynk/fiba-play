@@ -33,16 +33,11 @@ export default async function LoginPage() {
               "repeating-conic-gradient(rgba(255,255,255,0.04) 0% 25%, transparent 0% 50%), linear-gradient(135deg, #0066B3 0%, #003A63 55%, #3F7D23 100%)",
             backgroundSize: "56px 56px, 100% 100%",
           }}>
-          <div className="flex items-center gap-3">
-            {logo ? <span className="rounded-lg bg-white px-3 py-2"><img src={logo} alt="Fibabanka" className="h-8 w-auto" /></span> : <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-lg backdrop-blur">♟</span>}
-            <span className="text-lg font-bold tracking-tight">
-              FIBA {lang === "en" ? "Games" : "Oyunları"} <span className="font-normal text-fiba-300">2026</span>
-            </span>
+          <div>
+            <img src="/fibaoyunlar%C4%B1-logo.jpeg" alt="FIBA Oyunları" className="h-16 w-auto rounded-xl shadow-lg" />
           </div>
 
           <div>
-            <img src="/fibaoyunlar%C4%B1-logo.jpeg" alt=""
-              className="mb-6 h-36 w-full rounded-xl object-cover object-center shadow-lg" />
             <p className="text-3xl font-semibold leading-snug tracking-tight text-balance">
               {t("brandTagline")}
             </p>

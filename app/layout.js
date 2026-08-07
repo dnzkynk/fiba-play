@@ -25,14 +25,11 @@ export default async function RootLayout({ children }) {
           <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4 sm:px-8">
             <a href="/" className="flex items-center gap-2.5 no-underline">
               {logo ? (
-                <img src={logo} alt="" className="h-9 w-auto" />
+                <img src={logo} alt={brand} className="h-10 w-auto rounded-lg shadow-sm" />
               ) : (
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-fiba-600 to-fibagreen-500 text-base text-white shadow-sm">♟</span>
               )}
-              <span className="leading-tight">
-                <span className="block text-[15px] font-bold tracking-tight text-stone-900">{brand}</span>
-                <span className="hidden text-[11px] font-medium text-fiba-500 sm:block">2026</span>
-              </span>
+              <span className="hidden text-[11px] font-semibold text-stone-400 sm:block">2026</span>
             </a>
 
             <nav className="ml-auto flex items-center gap-1">
