@@ -35,12 +35,22 @@
   // ?debug=1: oyunun WebSocket trafiğini konsola döker (teşhis için)
   if (new URLSearchParams(location.search).has("debug")) {
     const OW = WebSocket;
+    const t0 = performance.now();
+    const ts = () => "+" + ((performance.now() - t0) / 1000).toFixed(2) + "s";
+    const dump = (d) => {
+      if (typeof d === "string") return "text(" + d.length + ") " + JSON.stringify(d.slice(0, 120));
+      const n = d?.byteLength ?? d?.size ?? d?.length ?? "?";
+      return "bin(" + n + ")";
+    };
     window.WebSocket = function (u, p) {
-      console.warn("[WS-XRAY] new", u, p === undefined ? "(protokolsüz)" : JSON.stringify(p));
+      console.warn("[WS-XRAY]", ts(), "new", u, p === undefined ? "(protokolsüz)" : JSON.stringify(p));
       const w = p === undefined ? new OW(u) : new OW(u, p);
-      w.addEventListener("open", () => console.warn("[WS-XRAY] open"));
-      w.addEventListener("error", () => console.warn("[WS-XRAY] error readyState=" + w.readyState));
-      w.addEventListener("close", (e) => console.warn("[WS-XRAY] close", e.code, e.reason || "(sebepsiz)", "clean=" + e.wasClean));
+      w.addEventListener("open", () => console.warn("[WS-XRAY]", ts(), "open binaryType=" + w.binaryType));
+      w.addEventListener("message", (e) => console.warn("[WS-XRAY]", ts(), "recv", dump(e.data)));
+      w.addEventListener("error", () => console.warn("[WS-XRAY]", ts(), "error readyState=" + w.readyState));
+      w.addEventListener("close", (e) => console.warn("[WS-XRAY]", ts(), "close", e.code, e.reason || "(sebepsiz)", "clean=" + e.wasClean));
+      const os = w.send.bind(w);
+      w.send = (d) => { console.warn("[WS-XRAY]", ts(), "send", dump(d)); return os(d); };
       return w;
     };
     window.WebSocket.prototype = OW.prototype;
