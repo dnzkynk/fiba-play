@@ -20,8 +20,9 @@ export default async function RootLayout({ children }) {
   return (
     <html lang={lang}>
       <body className="flex min-h-screen flex-col">
+        <div className="h-1 w-full bg-linear-to-r from-fiba-600 via-fiba-400 to-fibagreen-500" />
         <header className="sticky top-0 z-20 border-b border-stone-200 bg-white/90 backdrop-blur-md">
-          <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-6 px-4 sm:px-6">
+          <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-4 sm:px-8">
             <a href="/" className="flex items-center gap-2.5 no-underline">
               {logo ? (
                 <img src={logo} alt="" className="h-9 w-auto" />
@@ -52,10 +53,10 @@ export default async function RootLayout({ children }) {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 pb-16 sm:px-6">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 pb-16 sm:px-8">{children}</main>
 
         <footer className="border-t border-stone-200 bg-white">
-          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-5 text-xs text-stone-400 sm:px-6">
+          <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-5 text-xs text-stone-400 sm:px-8">
             <span>♟ 🎲 {brand} · {t("footerNote")}</span>
             <span>FIBA Holding © 2026</span>
           </div>
