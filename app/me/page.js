@@ -15,6 +15,7 @@ import { assignedUsername } from "@/lib/bgammon";
 export const dynamic = "force-dynamic";
 
 const GAME_ICON = { chess: "♟", tavla: "🎲" };
+const GAME_ART = { chess: "/satran%C3%A7-logo.jpeg", tavla: "/tavla-logo.jpeg" };
 
 export default async function MePage() {
   const myRows = await currentPlayerRows();
@@ -66,8 +67,12 @@ export default async function MePage() {
       <AutoRefresh seconds={15} />
 
       {/* Karşılama bandı */}
-      <section className="rounded-2xl bg-linear-to-r from-fiba-600 via-fiba-800 to-fiba-950 px-6 py-8 text-white shadow-md sm:px-10">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+      <section className="relative overflow-hidden rounded-2xl bg-linear-to-r from-fiba-600 via-fiba-800 to-fiba-950 px-6 py-8 text-white shadow-md sm:px-10">
+        <div className="pointer-events-none absolute -right-4 -top-6 hidden gap-2 opacity-90 md:flex">
+          <img src={GAME_ART.chess} alt="" className="h-36 w-24 rotate-6 rounded-xl object-cover shadow-lg" />
+          <img src={GAME_ART.tavla} alt="" className="h-36 w-24 -rotate-3 rounded-xl object-cover shadow-lg" />
+        </div>
+        <h1 className="relative text-2xl font-bold tracking-tight sm:text-3xl">
           {t("hello")}, {me.full_name.split(" ")[0]} 👋
         </h1>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -187,9 +192,10 @@ export default async function MePage() {
             return (
               <Card key={m.tid} className={champ ? "border-emerald-300 bg-emerald-50/50" : ""}>
                 <CardContent className="p-5">
-                  <p className="font-semibold">
-                    {GAME_ICON[m.tgame]} {tournamentTitle(t, lang, m.tgame, m.bracket_size)}
-                  </p>
+                  <div className="flex items-start gap-3">
+                    <img src={GAME_ART[m.tgame]} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+                    <p className="font-semibold">{tournamentTitle(t, lang, m.tgame, m.bracket_size)}</p>
+                  </div>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     {champ ? (
                       <Badge variant="success">{t("youChampion")}</Badge>

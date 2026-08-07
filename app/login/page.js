@@ -41,6 +41,8 @@ export default async function LoginPage() {
           </div>
 
           <div>
+            <img src="/fibaoyunlar%C4%B1-logo.jpeg" alt=""
+              className="mb-6 h-36 w-full rounded-xl object-cover object-center shadow-lg" />
             <p className="text-3xl font-semibold leading-snug tracking-tight text-balance">
               {t("brandTagline")}
             </p>
