@@ -49,13 +49,15 @@ export default async function TournamentPage({ params }) {
   return (
     <>
       <AutoRefresh seconds={20} />
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t.game === "chess" ? "♟" : "🎲"} {tournamentTitle(tr, lang, t.game, t.bracket_size)}
-        </h1>
-        <Badge variant={STATUS_VARIANT[t.status]}>{tr(`ts_${t.status}`)}</Badge>
-        {champion && <Badge variant="success">🏆 {tr("champion")}: {champion.full_name}</Badge>}
-      </div>
+      <section className="rounded-2xl bg-linear-to-r from-fiba-600 via-fiba-800 to-fiba-950 px-6 py-6 text-white shadow-md sm:px-10">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-bold tracking-tight">
+            {t.game === "chess" ? "♟" : "🎲"} {tournamentTitle(tr, lang, t.game, t.bracket_size)}
+          </h1>
+          <Badge variant={STATUS_VARIANT[t.status]}>{tr(`ts_${t.status}`)}</Badge>
+          {champion && <Badge variant="success">🏆 {tr("champion")}: {champion.full_name}</Badge>}
+        </div>
+      </section>
 
       <div className="mt-6 flex gap-8 overflow-x-auto pb-6">
         {t.rounds.map((matches, ri) => (

@@ -31,6 +31,21 @@
   <div id="sub">Maçın hazırlanıyor — sayfa kendiliğinden oyuna geçecek, hiçbir şeye tıklamana gerek yok.</div>
 </div>
 <script>
+  // ?debug=1: oyunun WebSocket trafiğini konsola döker (teşhis için)
+  if (new URLSearchParams(location.search).has("debug")) {
+    const OW = WebSocket;
+    window.WebSocket = function (u, p) {
+      console.warn("[WS-XRAY] new", u, p === undefined ? "(protokolsüz)" : JSON.stringify(p));
+      const w = p === undefined ? new OW(u) : new OW(u, p);
+      w.addEventListener("open", () => console.warn("[WS-XRAY] open"));
+      w.addEventListener("error", () => console.warn("[WS-XRAY] error readyState=" + w.readyState));
+      w.addEventListener("close", (e) => console.warn("[WS-XRAY] close", e.code, e.reason || "(sebepsiz)", "clean=" + e.wasClean));
+      return w;
+    };
+    window.WebSocket.prototype = OW.prototype;
+    Object.assign(window.WebSocket, { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 });
+  }
+
   const msg = (t) => (document.getElementById("msg").textContent = t);
   const bar = (p) => (document.getElementById("bar").style.width = Math.min(100, p) + "%");
   const overlay = document.getElementById("overlay");
@@ -83,7 +98,7 @@
       // Emniyet: 45 sn içinde oda sinyali gelmezse perdeyi kaldır (elle devam edilebilsin)
       setTimeout(() => {
         if (!overlay.classList.contains("hidden")) overlay.classList.add("hidden");
-      }, 45000);
+      }, 75000);
 
       go.run(instance);
     } catch (err) {

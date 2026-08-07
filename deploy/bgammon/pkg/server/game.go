@@ -393,7 +393,31 @@ func (g *serverGame) addClient(client *serverClient) (spectator bool) {
 		rating = client.account.casual.getRating(g.Variant, g.Points > 1) / 100
 		icon = client.account.icon
 	}
+	// FIBA yaması: isim hangi koltuğa kayıtlıysa yalnızca oraya (yeniden) oturabilir;
+	// koltuktaki eski/hayalet bağlantı düşürülür. Aynı ismin iki koltuğa oturması imkânsızdır.
+	sameName1 := g.Player1.Name == string(client.name) || (g.allowed1 != nil && bytes.Equal(client.name, g.allowed1))
+	sameName2 := g.Player2.Name == string(client.name) || (g.allowed2 != nil && bytes.Equal(client.name, g.allowed2))
 	switch {
+	case sameName1:
+		if g.client1 != nil && g.client1 != client {
+			g.client1.Terminate("Replaced by a new connection.")
+		}
+		g.client1 = client
+		g.Player1.Name = string(client.name)
+		g.Player1.Rating = rating
+		g.Player1.Icon = icon
+		client.playerNumber = 1
+		playerNumber = 1
+	case sameName2:
+		if g.client2 != nil && g.client2 != client {
+			g.client2.Terminate("Replaced by a new connection.")
+		}
+		g.client2 = client
+		g.Player2.Name = string(client.name)
+		g.Player2.Rating = rating
+		g.Player2.Icon = icon
+		client.playerNumber = 2
+		playerNumber = 2
 	case g.client1 != nil:
 		g.client2 = client
 		g.Player2.Name = string(client.name)

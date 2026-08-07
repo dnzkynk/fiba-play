@@ -77,7 +77,7 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+      <div className="mt-6 grid gap-6 lg:grid-cols-2 2xl:grid-cols-3">
         <Card>
           <CardHeader><CardTitle>🔴 Canlı maçlar</CardTitle></CardHeader>
           <CardContent>
@@ -130,7 +130,7 @@ export default async function AdminDashboard() {
         </Card>
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader><CardTitle>Turnuva ilerlemesi</CardTitle></CardHeader>
           <CardContent>
