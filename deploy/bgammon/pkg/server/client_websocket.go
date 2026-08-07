@@ -13,9 +13,11 @@ import (
 	"github.com/coder/websocket"
 )
 
+// Sıkıştırma bilerek kapalı: Safari'nin permessage-deflate implementasyonu buglu —
+// deflate anlaşılırsa büyük mesajlarda "Protocol error" ile bağlantıyı koparıyor.
 var acceptOptions = &websocket.AcceptOptions{
 	InsecureSkipVerify: true,
-	CompressionMode:    websocket.CompressionContextTakeover,
+	CompressionMode:    websocket.CompressionDisabled,
 }
 
 var _ bgammon.Client = &webSocketClient{}
