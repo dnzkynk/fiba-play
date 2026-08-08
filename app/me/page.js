@@ -66,22 +66,19 @@ export default async function MePage() {
       <AutoRefresh seconds={15} />
 
       {/* Karşılama bandı */}
-      <section className="relative overflow-hidden rounded-2xl bg-linear-to-r from-fiba-600 via-fiba-800 to-fiba-950 px-6 py-8 text-white shadow-md sm:px-10">
-        <div className="pointer-events-none absolute -right-2 -top-8 hidden md:block">
-          <img src="/satranc-logo.png" alt="" className="inline-block h-44 w-auto -rotate-6 drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)]" />
-          <img src="/tavla-logo.png" alt="" className="-ml-8 inline-block h-44 w-auto rotate-3 drop-shadow-[0_10px_20px_rgba(0,0,0,0.4)]" />
-        </div>
-        <h1 className="relative text-2xl font-bold tracking-tight sm:text-3xl">
+      <img src="/ust-banner.png" alt="Fiba Tournament" className="w-full rounded-2xl shadow-sm" />
+      <section className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           {t("hello")}, {me.full_name.split(" ")[0]} 👋
         </h1>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {[...byTournament.values()].map((m) => (
-            <span key={m.tid} className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-sm backdrop-blur">
+            <span key={m.tid} className="inline-flex items-center gap-1.5 rounded-full bg-fiba-50 px-3 py-1 text-sm text-fiba-800">
               {GAME_ICON[m.tgame]} {tournamentTitle(t, lang, m.tgame, m.bracket_size)}
               {finalsWon.has(m.tid) && <span>🏆</span>}
             </span>
           ))}
-          {byTournament.size === 0 && <span className="text-sm text-fiba-200">{t("noDrawYet")}</span>}
+          {byTournament.size === 0 && <span className="text-sm text-stone-500">{t("noDrawYet")}</span>}
         </div>
       </section>
 
