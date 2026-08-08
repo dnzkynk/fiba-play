@@ -15,6 +15,7 @@ export default async function ParticipantsPage() {
   const people = await q(
     `SELECT email, min(full_name) AS full_name, min(company) AS company, min(password) AS password,
        array_agg(json_build_object('id', p.id, 'game', p.game, 'size', p.bracket_size,
+         'reserve', p.is_reserve,
          'assigned', EXISTS (SELECT 1 FROM matches m JOIN tournaments t ON t.id = m.tournament_id
                              WHERE t.game = p.game AND (m.p1_id = p.id OR m.p2_id = p.id))) ORDER BY p.game) AS entries
      FROM participants p GROUP BY email ORDER BY min(full_name)`
@@ -65,7 +66,8 @@ export default async function ParticipantsPage() {
                       <span className="flex flex-wrap gap-1.5">
                         {p.entries.map((e) => (
                           <Badge key={e.id} variant={e.assigned ? "success" : "secondary"}>
-                            {e.game === "chess" ? "♟" : "🎲"} {e.size} {e.assigned ? "· turnuvada" : "· bekliyor"}
+                            {e.game === "chess" ? "♟" : "🎲"} {e.size}{" "}
+                            {e.reserve ? "· yedek" : e.assigned ? "· turnuvada" : "· bekliyor"}
                           </Badge>
                         ))}
                       </span>

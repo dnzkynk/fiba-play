@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS participants (
   bracket_size INT  NOT NULL CHECK (bracket_size IN (8, 16, 32, 64)),
   token        TEXT NOT NULL UNIQUE,          -- iç kullanım (join yönlendirmesi imzası)
   password     TEXT,                          -- admin'in dağıttığı giriş parolası (otomatik üretilir)
+  is_reserve   BOOLEAN NOT NULL DEFAULT false, -- yedek listesi: kuraya girmez, koltuğa atanabilir
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
   -- Aynı kişi aynı oyunda birden fazla turnuvaya katılabilir (uygulama çifte kurayı engeller)
 );
@@ -22,6 +23,7 @@ CREATE TABLE IF NOT EXISTS tournaments (
                CHECK (status IN ('draft', 'drawn', 'running', 'finished')),
   starts_at    TIMESTAMPTZ,                   -- 1. turun başlangıç saati
   round_interval_hours INT NOT NULL DEFAULT 24, -- her tur bir öncekinden kaç saat sonra
+  round_times  JSONB,                         -- tur bazlı saatler (varsa aralık yerine bu geçerlidir)
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -72,7 +74,8 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT INTO settings (key, value) VALUES
   ('chess_clock_limit', '600'),
   ('chess_clock_increment', '5'),
-  ('tavla_points', '3')
+  ('tavla_points', '3'),
+  ('no_show_minutes', '10')
 ON CONFLICT (key) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS audit_log (

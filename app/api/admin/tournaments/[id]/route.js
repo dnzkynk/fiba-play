@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { q, audit } from "@/lib/db";
-import { swapSeats, scheduleTournament } from "@/lib/engine";
+import { swapSeats, scheduleTournament, replaceSeat } from "@/lib/engine";
 
 export async function PATCH(req, { params }) {
   let admin;
@@ -19,7 +19,16 @@ export async function PATCH(req, { params }) {
       return NextResponse.json({ ok: true });
     }
     if (body.action === "schedule") {
-      const result = await scheduleTournament(parseInt(id, 10), body.startsAt, body.intervalHours, admin.email);
+      const result = await scheduleTournament(
+        parseInt(id, 10),
+        Array.isArray(body.roundTimes) ? body.roundTimes : body.startsAt,
+        body.intervalHours,
+        admin.email
+      );
+      return NextResponse.json(result);
+    }
+    if (body.action === "replace") {
+      const result = await replaceSeat(parseInt(id, 10), parseInt(body.out, 10), parseInt(body.in, 10), admin.email);
       return NextResponse.json(result);
     }
     return NextResponse.json({ error: "Bilinmeyen işlem" }, { status: 400 });

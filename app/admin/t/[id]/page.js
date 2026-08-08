@@ -3,7 +3,7 @@ import { isAdmin } from "@/lib/auth";
 import { tournamentWithMatches, roundName, STATUS_TR, T_STATUS_TR } from "@/lib/queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, STATUS_VARIANT } from "@/components/ui/badge";
-import { MatchControls, SwapForm, TournamentScheduleForm, DeleteTournamentButton } from "../../ui";
+import { MatchControls, SwapForm, TournamentScheduleForm, DeleteTournamentButton, ReplaceForm } from "../../ui";
 import { AutoRefresh } from "@/app/refresh";
 import { q } from "@/lib/db";
 
@@ -23,6 +23,22 @@ export default async function AdminTournament({ params }) {
        AND m.status IN ('pending', 'scheduled') AND m.game_id IS NULL
      ORDER BY p.full_name`,
     [t.id]
+  );
+
+  // Oyuncu değişikliği: oynanmamış koltuktakiler çıkabilir, turnuva dışındakiler (yedekler önde) girebilir
+  const seated = await q(
+    `SELECT DISTINCT p.id, p.full_name FROM matches m
+     JOIN participants p ON p.id IN (m.p1_id, m.p2_id)
+     WHERE m.tournament_id = $1 AND m.status <> 'done' AND m.game_id IS NULL
+     ORDER BY p.full_name`,
+    [t.id]
+  );
+  const subs = await q(
+    `SELECT p.id, p.full_name, p.is_reserve FROM participants p
+     WHERE p.game = $1 AND NOT EXISTS (
+       SELECT 1 FROM matches m WHERE m.tournament_id = $2 AND (m.p1_id = p.id OR m.p2_id = p.id))
+     ORDER BY p.is_reserve DESC, p.full_name`,
+    [t.game, t.id]
   );
 
   return (
@@ -46,18 +62,36 @@ export default async function AdminTournament({ params }) {
         <CardHeader>
           <CardTitle>Turnuva programı</CardTitle>
           <p className="text-sm text-stone-500">
-            1. turun saatini ve tur aralığını belirleyin — oynanmamış tüm maçların saatleri otomatik yazılır,
-            saati gelen maçın linki kendiliğinden üretilir. Tek maçı aşağıdan ayrıca kaydırabilirsiniz.
+            Her turun gün ve saatini ayrı ayrı belirleyin (örn. 1.-2. tur aynı gün, final ertesi gün) —
+            oynanmamış maçların saatleri otomatik yazılır, saati gelen maçın linki kendiliğinden üretilir.
+            Tek maçı aşağıdan ayrıca kaydırabilirsiniz.
           </p>
         </CardHeader>
         <CardContent>
           <TournamentScheduleForm
             tournamentId={t.id}
+            rounds={t.rounds.length}
+            roundTimes={t.round_times}
             startsAt={t.starts_at?.toISOString?.() ?? t.starts_at}
             intervalHours={t.round_interval_hours}
           />
         </CardContent>
       </Card>
+
+      {seated.length > 0 && subs.length > 0 && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Oyuncu değişikliği (yedek atama)</CardTitle>
+            <p className="text-sm text-stone-500">
+              Katılamayacağını bildiren oyuncunun koltuğuna yedek listeden atama yapar (şartname: turnuvadan
+              bir gün öncesine kadar). Çıkan oyuncu yedeğe düşer; oynanmış maçlara dokunulmaz.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <ReplaceForm tournamentId={t.id} seated={seated} subs={subs} />
+          </CardContent>
+        </Card>
+      )}
 
       {swappable.length >= 2 && (
         <Card className="mt-6">

@@ -20,7 +20,8 @@ function parseCsv(text) {
     const cols = line.split(/[;,]/).map((c) => c.trim());
     const lineNo = i + (hasHeader ? 2 : 1);
     if (cols.length < 5) return errors.push(`Satır ${lineNo}: eksik kolon (5 gerekli)`);
-    const [fullName, email, company, gameRaw, sizeRaw] = cols;
+    const [fullName, email, company, gameRaw, sizeRaw, reserveRaw] = cols;
+    const isReserve = /yedek|reserve/i.test(reserveRaw ?? "");
     const game = /tavla/i.test(gameRaw) ? (TAVLA_ENABLED ? "tavla" : "kapali") : /satran|chess/i.test(gameRaw) ? "chess" : null;
     if (game === "kapali") return errors.push(`Satır ${lineNo}: tavla kayıtları kapalı — yalnızca satranç`);
     const size = parseInt(sizeRaw, 10);
@@ -29,7 +30,7 @@ function parseCsv(text) {
     if (!game) errors.push(`Satır ${lineNo}: oyun 'satranc' veya 'tavla' olmalı (${gameRaw})`);
     if (![8, 16, 32, 64].includes(size)) errors.push(`Satır ${lineNo}: turnuva boyu 8/16/32/64 olmalı (${sizeRaw})`);
     if (fullName && game && [8, 16, 32, 64].includes(size)) {
-      rows.push({ fullName, email: email.toLowerCase(), company, game, size });
+      rows.push({ fullName, email: email.toLowerCase(), company, game, size, isReserve });
     }
   });
   return { rows, errors };
@@ -62,16 +63,16 @@ export async function POST(req) {
     );
     if (waiting) {
       await q(
-        `UPDATE participants SET full_name = $1, company = $2, bracket_size = $3 WHERE id = $4`,
-        [r.fullName, r.company || null, r.size, waiting.id]
+        `UPDATE participants SET full_name = $1, company = $2, bracket_size = $3, is_reserve = $4 WHERE id = $5`,
+        [r.fullName, r.company || null, r.size, r.isReserve, waiting.id]
       );
       updated++;
     } else {
       await q(
-        `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password)
-         VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password, is_reserve)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
         [r.fullName, r.email, r.company || null, r.game, r.size,
-         crypto.randomBytes(16).toString("hex"), existing?.password ?? generatePassword()]
+         crypto.randomBytes(16).toString("hex"), existing?.password ?? generatePassword(), r.isReserve]
       );
       inserted++;
     }

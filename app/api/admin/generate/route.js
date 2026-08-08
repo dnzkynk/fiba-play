@@ -18,7 +18,7 @@ export async function POST() {
 
   const groups = await q(
     `SELECT p.game, p.bracket_size, count(*)::int AS n FROM participants p
-     WHERE NOT EXISTS (
+     WHERE NOT p.is_reserve AND NOT EXISTS (
        SELECT 1 FROM matches m JOIN tournaments t ON t.id = m.tournament_id
        WHERE t.game = p.game AND (m.p1_id = p.id OR m.p2_id = p.id)
      )

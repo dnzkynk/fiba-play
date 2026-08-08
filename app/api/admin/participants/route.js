@@ -70,10 +70,10 @@ export async function POST(req) {
     const created = [];
     for (const game of games) {
       const [p] = await q(
-        `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password)
-         VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+        `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password, is_reserve)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
         [b.fullName.trim(), email, b.company?.trim() || null, game, size,
-         crypto.randomBytes(16).toString("hex"), password]
+         crypto.randomBytes(16).toString("hex"), password, !!b.isReserve]
       );
       created.push(p);
     }

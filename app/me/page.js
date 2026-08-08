@@ -40,7 +40,9 @@ export default async function MePage() {
 
   const active = matches.filter((m) => m.status !== "done");
   const past = matches.filter((m) => m.status === "done");
-  const tavlaPoints = (await getSettings()).tavla_points ?? "3";
+  const settings = await getSettings();
+  const tavlaPoints = settings.tavla_points ?? "3";
+  const noShowMin = settings.no_show_minutes ?? "10";
 
   const byTournament = new Map();
   for (const m of matches) if (!byTournament.has(m.tid)) byTournament.set(m.tid, m);
@@ -108,7 +110,7 @@ export default async function MePage() {
                   {m.status === "scheduled" && m.scheduled_at && (
                     <div className="mt-3 rounded-lg bg-fiba-50 p-3 text-sm">
                       🕐 <strong>{new Date(m.scheduled_at).toLocaleString(locale, { dateStyle: "full", timeStyle: "short" })}</strong>
-                      <p className="mt-1 text-xs text-stone-500">{t("scheduleHint")}</p>
+                      <p className="mt-1 text-xs text-stone-500">{t("scheduleHint").replace("{dk}", noShowMin)}</p>
                     </div>
                   )}
                   {m.status === "pending" && (

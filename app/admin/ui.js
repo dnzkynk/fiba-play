@@ -59,6 +59,7 @@ export function AdminLoginForm() {
 export function AddParticipantForm() {
   const [f, setF] = useState({ fullName: "", email: "", company: "", size: "16" });
   const [games, setGames] = useState({ chess: true, tavla: false });
+  const [isReserve, setIsReserve] = useState(false);
   const [msg, setMsg] = useState(null);
   const router = useRouter();
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
@@ -70,7 +71,7 @@ export function AddParticipantForm() {
     if (!selected.length) return setMsg({ ok: false, text: "En az bir oyun seçin" });
     const res = await fetch("/api/admin/participants", {
       method: "POST",
-      body: JSON.stringify({ ...f, games: selected }),
+      body: JSON.stringify({ ...f, games: selected, isReserve }),
     });
     const data = await res.json();
     if (res.ok) {
@@ -113,6 +114,11 @@ export function AddParticipantForm() {
             {[8, 16, 32, 64].map((s) => <option key={s} value={s}>{s} kişilik</option>)}
           </Select>
         </div>
+        <label className="flex h-9 cursor-pointer items-center gap-1.5 text-sm text-stone-700">
+          <input type="checkbox" className="accent-fiba-600" checked={isReserve}
+            onChange={(e) => setIsReserve(e.target.checked)} />
+          Yedek listesi
+        </label>
         <Button type="submit">Ekle</Button>
       </div>
       {msg && (
@@ -210,6 +216,7 @@ export function GenerateButton() {
 export function SettingsForm({ initial }) {
   const [chessTime, setChessTime] = useState(`${initial.chess_clock_limit ?? "600"}:${initial.chess_clock_increment ?? "5"}`);
   const [tavlaPoints, setTavlaPoints] = useState(initial.tavla_points ?? "3");
+  const [noShow, setNoShow] = useState(initial.no_show_minutes ?? "10");
   const [msg, setMsg] = useState(null);
 
   async function save(e) {
@@ -217,13 +224,24 @@ export function SettingsForm({ initial }) {
     const [limit, inc] = chessTime.split(":");
     const res = await fetch("/api/admin/settings", {
       method: "POST",
-      body: JSON.stringify({ chess_clock_limit: limit, chess_clock_increment: inc, tavla_points: tavlaPoints }),
+      body: JSON.stringify({ chess_clock_limit: limit, chess_clock_increment: inc, tavla_points: tavlaPoints, no_show_minutes: noShow }),
     });
     setMsg(res.ok ? { ok: true, text: "Kaydedildi ✓" } : { ok: false, text: (await res.json()).error });
   }
 
   return (
     <form onSubmit={save} className="flex flex-wrap items-end gap-4">
+      <div className="flex flex-col gap-1.5">
+        <Label>⏱ Hükmen penceresi</Label>
+        <Select className="w-64" value={noShow} onChange={(e) => setNoShow(e.target.value)}>
+          <option value="5">5 dakika</option>
+          <option value="10">10 dakika (şartname — önerilen)</option>
+          <option value="15">15 dakika</option>
+          <option value="30">30 dakika</option>
+          <option value="60">1 saat</option>
+        </Select>
+        <span className="text-xs text-stone-400">Maç saatinden itibaren bu süre içinde katılmayan taraf hükmen kaybeder</span>
+      </div>
       <div className="flex flex-col gap-1.5">
         <Label>♟ Satranç maç süresi</Label>
         <Select className="w-64" value={chessTime} onChange={(e) => setChessTime(e.target.value)}>
@@ -253,15 +271,24 @@ export function SettingsForm({ initial }) {
   );
 }
 
-export function TournamentScheduleForm({ tournamentId, startsAt, intervalHours }) {
+export function TournamentScheduleForm({ tournamentId, rounds, roundTimes, startsAt, intervalHours }) {
   const toLocal = (iso) => {
     if (!iso) return "";
     const d = new Date(iso);
     const pad = (n) => String(n).padStart(2, "0");
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   };
-  const [at, setAt] = useState(toLocal(startsAt));
-  const [interval, setIntervalHours] = useState(String(intervalHours ?? 24));
+  const roundLabel = (i) => {
+    const kalan = rounds - i;
+    return kalan === 1 ? "Final" : kalan === 2 ? "Yarı final" : kalan === 3 ? "Çeyrek final" : `${i + 1}. Tur`;
+  };
+  const [times, setTimes] = useState(() =>
+    Array.from({ length: rounds }, (_, i) => {
+      if (roundTimes?.[i]) return toLocal(roundTimes[i]);
+      if (startsAt) return toLocal(new Date(new Date(startsAt).getTime() + i * (intervalHours ?? 24) * 3600_000).toISOString());
+      return "";
+    })
+  );
   const [msg, setMsg] = useState(null);
   const router = useRouter();
 
@@ -271,8 +298,7 @@ export function TournamentScheduleForm({ tournamentId, startsAt, intervalHours }
       method: "PATCH",
       body: JSON.stringify({
         action: "schedule",
-        startsAt: new Date(at).toISOString(),
-        intervalHours: parseInt(interval, 10),
+        roundTimes: times.map((t) => new Date(t).toISOString()),
       }),
     });
     const data = await res.json();
@@ -284,24 +310,14 @@ export function TournamentScheduleForm({ tournamentId, startsAt, intervalHours }
 
   return (
     <div className="flex flex-wrap items-end gap-3">
-      <div className="flex flex-col gap-1.5">
-        <Label>1. tur başlangıcı</Label>
-        <Input type="datetime-local" className="w-auto" value={at} onChange={(e) => setAt(e.target.value)} />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label>Tur aralığı</Label>
-        <Select className="w-36" value={interval} onChange={(e) => setIntervalHours(e.target.value)}>
-          <option value="1">1 saat</option>
-          <option value="2">2 saat</option>
-          <option value="3">3 saat</option>
-          <option value="6">6 saat</option>
-          <option value="12">12 saat</option>
-          <option value="24">1 gün</option>
-          <option value="48">2 gün</option>
-          <option value="168">1 hafta</option>
-        </Select>
-      </div>
-      <Button disabled={!at} onClick={apply}>Programı uygula</Button>
+      {times.map((v, i) => (
+        <div key={i} className="flex flex-col gap-1.5">
+          <Label>{roundLabel(i)}</Label>
+          <Input type="datetime-local" className="w-auto" value={v}
+            onChange={(e) => setTimes(times.map((t, j) => (j === i ? e.target.value : t)))} />
+        </div>
+      ))}
+      <Button disabled={times.some((t) => !t)} onClick={apply}>Programı uygula</Button>
       {msg && <span className={`pb-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
     </div>
   );
@@ -490,5 +506,42 @@ export function DeleteTournamentButton({ tid, name }) {
     <Button variant="destructive" size="sm" onClick={run} disabled={busy}>
       {busy ? "Siliniyor…" : "Turnuvayı sil"}
     </Button>
+  );
+}
+
+export function ReplaceForm({ tournamentId, seated, subs }) {
+  const [out, setOut] = useState("");
+  const [inn, setInn] = useState("");
+  const [msg, setMsg] = useState(null);
+  const router = useRouter();
+  async function run() {
+    setMsg(null);
+    const res = await fetch(`/api/admin/tournaments/${tournamentId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ action: "replace", out, in: inn }),
+    });
+    const data = await res.json();
+    if (res.ok) { setMsg({ ok: true, text: "Değişiklik yapıldı ✓" }); setOut(""); setInn(""); router.refresh(); }
+    else setMsg({ ok: false, text: data.error });
+  }
+  return (
+    <div className="flex flex-wrap items-end gap-3">
+      <div className="flex flex-col gap-1.5">
+        <Label>Çıkacak oyuncu</Label>
+        <Select className="w-56" value={out} onChange={(e) => setOut(e.target.value)}>
+          <option value="">Seçin…</option>
+          {seated.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
+        </Select>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Label>Yerine girecek (yedek)</Label>
+        <Select className="w-56" value={inn} onChange={(e) => setInn(e.target.value)}>
+          <option value="">Seçin…</option>
+          {subs.map((p) => <option key={p.id} value={p.id}>{p.full_name}{p.is_reserve ? " (yedek)" : ""}</option>)}
+        </Select>
+      </div>
+      <Button disabled={!out || !inn} onClick={run}>Değiştir</Button>
+      {msg && <span className={`pb-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
+    </div>
   );
 }
