@@ -5,8 +5,8 @@ import { UserMenu, LangSwitcher, NavLink } from "./nav";
 import { brandLogoPath } from "@/lib/brand";
 
 export const metadata = {
-  title: "FIBA Oyunları — Satranç & Tavla",
-  description: "FIBA Holding şirket içi online satranç ve tavla turnuvaları",
+  title: "Fiba Tournament 2026 — Satranç",
+  description: "FIBA Holding şirketleri arası online satranç turnuvası",
 };
 
 export default async function RootLayout({ children }) {
@@ -14,7 +14,7 @@ export default async function RootLayout({ children }) {
   const playerRows = await currentPlayerRows();
   const player = playerRows[0] ?? null;
   const { lang, t } = await getT();
-  const brand = `FIBA ${lang === "en" ? "Games" : "Oyunları"}`;
+  const brand = "Fiba Tournament 2026";
   const logo = brandLogoPath();
 
   return (
@@ -54,7 +54,7 @@ export default async function RootLayout({ children }) {
 
         <footer className="border-t border-stone-200 bg-white">
           <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-5 text-xs text-stone-400 sm:px-8">
-            <span>♟ 🎲 {brand} · {t("footerNote")}</span>
+            <span>♟ {brand} · {t("footerNote")}</span>
             <span>FIBA Holding © 2026</span>
           </div>
         </footer>

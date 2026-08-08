@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { q, audit } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { drawTournament } from "@/lib/engine";
+import { TAVLA_ENABLED } from "@/lib/features";
 
 const GAME_LABEL = { chess: "Satranç", tavla: "Tavla" };
 
@@ -27,6 +28,7 @@ export async function POST() {
   const created = [];
   for (const gr of groups) {
     if (gr.n < 2) continue;
+    if (gr.game === "tavla" && !TAVLA_ENABLED) continue;
     const name = `FIBA Oyunları ${GAME_LABEL[gr.game]} — ${gr.bracket_size}'lik Turnuva`;
     const [t] = await q(
       `INSERT INTO tournaments (name, game, bracket_size) VALUES ($1,$2,$3) RETURNING *`,

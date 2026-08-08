@@ -4,6 +4,23 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
+import { TAVLA_ENABLED } from "@/lib/features";
+
+// Katılımcı listesi (otomasyon/yedekleme için)
+export async function GET() {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+  }
+  const rows = await q(
+    `SELECT p.id, p.full_name, p.email, p.company, p.game, p.bracket_size,
+            EXISTS (SELECT 1 FROM matches m JOIN tournaments t ON t.id = m.tournament_id
+                    WHERE t.game = p.game AND (m.p1_id = p.id OR m.p2_id = p.id)) AS assigned
+     FROM participants p ORDER BY p.id`
+  );
+  return NextResponse.json(rows);
+}
 
 export async function POST(req) {
   let admin;
@@ -14,9 +31,12 @@ export async function POST(req) {
   }
   const b = await req.json();
   const email = (b.email ?? "").trim().toLowerCase();
+  const allowed = TAVLA_ENABLED ? ["chess", "tavla"] : ["chess"];
   const games = Array.isArray(b.games) && b.games.length
-    ? b.games.filter((g) => ["chess", "tavla"].includes(g))
-    : [b.game === "tavla" ? "tavla" : "chess"];
+    ? b.games.filter((g) => allowed.includes(g))
+    : [b.game === "tavla" && TAVLA_ENABLED ? "tavla" : "chess"];
+  if (!games.length)
+    return NextResponse.json({ error: "Tavla kayıtları kapalı — yalnızca satranç eklenebilir" }, { status: 400 });
   const size = parseInt(b.size, 10);
   if (!b.fullName?.trim()) return NextResponse.json({ error: "Ad soyad gerekli" }, { status: 400 });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))

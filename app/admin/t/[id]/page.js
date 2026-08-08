@@ -3,7 +3,7 @@ import { isAdmin } from "@/lib/auth";
 import { tournamentWithMatches, roundName, STATUS_TR, T_STATUS_TR } from "@/lib/queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, STATUS_VARIANT } from "@/components/ui/badge";
-import { MatchControls, SwapForm, TournamentScheduleForm } from "../../ui";
+import { MatchControls, SwapForm, TournamentScheduleForm, DeleteTournamentButton } from "../../ui";
 import { AutoRefresh } from "@/app/refresh";
 import { q } from "@/lib/db";
 
@@ -37,6 +37,9 @@ export default async function AdminTournament({ params }) {
         <a className="text-sm font-medium text-stone-600 hover:underline" href={`/t/${t.id}`} target="_blank">
           Fikstür görünümü ↗
         </a>
+        <span className="ml-auto">
+          <DeleteTournamentButton tid={t.id} name={t.name} />
+        </span>
       </div>
 
       <Card className="mt-6">

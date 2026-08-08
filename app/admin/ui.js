@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input, Select, Textarea, Label } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { TAVLA_ENABLED } from "@/lib/features";
 
 export function AdminLoginForm() {
   const [email, setEmail] = useState("");
@@ -97,7 +98,7 @@ export function AddParticipantForm() {
         <div className="flex flex-col gap-1.5">
           <Label>Oyunlar</Label>
           <div className="flex h-9 items-center gap-3 rounded-md border border-stone-300 bg-white px-3">
-            {[["chess", "♟ Satranç"], ["tavla", "🎲 Tavla"]].map(([key, label]) => (
+            {[["chess", "♟ Satranç"], ...(TAVLA_ENABLED ? [["tavla", "🎲 Tavla"]] : [])].map(([key, label]) => (
               <label key={key} className="flex cursor-pointer items-center gap-1.5 text-sm font-normal text-stone-700">
                 <input type="checkbox" className="accent-fiba-600" checked={games[key]}
                   onChange={(e) => setGames({ ...games, [key]: e.target.checked })} />
@@ -166,7 +167,7 @@ export function ImportForm() {
   return (
     <form onSubmit={submit} className="rounded-lg border border-stone-200 bg-stone-50 p-4">
       <p className="mb-2 text-xs text-stone-500">
-        Kolonlar: <code className="rounded bg-white px-1 py-0.5">ad_soyad, email, sirket, oyun(satranc/tavla), turnuva_boyu(8/16/32/64)</code>{" "}
+        Kolonlar: <code className="rounded bg-white px-1 py-0.5">ad_soyad, email, sirket, oyun({TAVLA_ENABLED ? "satranc/tavla" : "satranc"}), turnuva_boyu(8/16/32/64)</code>{" "}
         — Excel'den CSV olarak dışa aktarıp yükleyin veya yapıştırın. Parolalar otomatik üretilir.
       </p>
       <input type="file" accept=".csv,.txt" className="mb-2 block text-sm"
@@ -234,16 +235,18 @@ export function SettingsForm({ initial }) {
         </Select>
         <span className="text-xs text-stone-400">Oyuncu başına düşünme süresi + her hamlede eklenen saniye</span>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <Label>🎲 Tavla maç uzunluğu</Label>
-        <Select className="w-64" value={tavlaPoints} onChange={(e) => setTavlaPoints(e.target.value)}>
-          <option value="1">Tek oyun (1 puan) — en hızlı</option>
-          <option value="3">3 puanlık maç (önerilen)</option>
-          <option value="5">5 puanlık maç</option>
-          <option value="7">7 puanlık maç — uzun</option>
-        </Select>
-        <span className="text-xs text-stone-400">Bu puana ilk ulaşan maçı kazanır (mars 2 sayılır)</span>
-      </div>
+      {TAVLA_ENABLED && (
+        <div className="flex flex-col gap-1.5">
+          <Label>🎲 Tavla maç uzunluğu</Label>
+          <Select className="w-64" value={tavlaPoints} onChange={(e) => setTavlaPoints(e.target.value)}>
+            <option value="1">Tek oyun (1 puan) — en hızlı</option>
+            <option value="3">3 puanlık maç (önerilen)</option>
+            <option value="5">5 puanlık maç</option>
+            <option value="7">7 puanlık maç — uzun</option>
+          </Select>
+          <span className="text-xs text-stone-400">Bu puana ilk ulaşan maçı kazanır (mars 2 sayılır)</span>
+        </div>
+      )}
       <Button type="submit">Kaydet</Button>
       {msg && <span className={`pb-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
     </form>
@@ -470,5 +473,22 @@ export function AdminsManager({ admins, myId }) {
         ))}
       </div>
     </div>
+  );
+}
+
+export function DeleteTournamentButton({ tid, name }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  async function run() {
+    if (!confirm(`"${name}" turnuvası tüm maçlarıyla birlikte silinecek. Katılımcılar tekrar kura bekler duruma döner. Emin misiniz?`)) return;
+    setBusy(true);
+    const res = await fetch(`/api/admin/tournaments/${tid}`, { method: "DELETE" });
+    if (res.ok) router.push("/admin/tournaments");
+    else { alert((await res.json()).error); setBusy(false); }
+  }
+  return (
+    <Button variant="destructive" size="sm" onClick={run} disabled={busy}>
+      {busy ? "Siliniyor…" : "Turnuvayı sil"}
+    </Button>
   );
 }

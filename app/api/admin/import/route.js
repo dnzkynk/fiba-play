@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
+import { TAVLA_ENABLED } from "@/lib/features";
 
 function parseCsv(text) {
   const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
@@ -20,7 +21,8 @@ function parseCsv(text) {
     const lineNo = i + (hasHeader ? 2 : 1);
     if (cols.length < 5) return errors.push(`Satır ${lineNo}: eksik kolon (5 gerekli)`);
     const [fullName, email, company, gameRaw, sizeRaw] = cols;
-    const game = /tavla/i.test(gameRaw) ? "tavla" : /satran|chess/i.test(gameRaw) ? "chess" : null;
+    const game = /tavla/i.test(gameRaw) ? (TAVLA_ENABLED ? "tavla" : "kapali") : /satran|chess/i.test(gameRaw) ? "chess" : null;
+    if (game === "kapali") return errors.push(`Satır ${lineNo}: tavla kayıtları kapalı — yalnızca satranç`);
     const size = parseInt(sizeRaw, 10);
     if (!fullName) errors.push(`Satır ${lineNo}: ad soyad boş`);
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push(`Satır ${lineNo}: geçersiz e-posta (${email})`);
