@@ -1,4 +1,5 @@
 // Fikstür ekranı: sadece o turnuvanın katılımcıları ve adminler görebilir.
+import { LocalTime } from "@/app/timefmt";
 import { notFound, redirect } from "next/navigation";
 import { q } from "@/lib/db";
 import { isAdmin, currentPlayerRows } from "@/lib/auth";
@@ -84,7 +85,7 @@ export default async function TournamentPage({ params }) {
                     <span>{m.winner_id ? tr("forfeit") : tr("cancelled")}</span>
                   )}
                   {m.status === "scheduled" && m.scheduled_at && (
-                    <span>🕐 {new Date(m.scheduled_at).toLocaleString(locale, { dateStyle: "short", timeStyle: "short" })}</span>
+                    <span>🕐 <LocalTime iso={m.scheduled_at} locale={locale} dateStyle="short" /></span>
                   )}
                 </div>
               </div>

@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { href: "/admin", label: "Genel Bakış", exact: true },
   { href: "/admin/tournaments", label: "Turnuvalar" },
+  { href: "/admin/applications", label: "Başvurular" },
   { href: "/admin/participants", label: "Katılımcılar" },
   { href: "/admin/settings", label: "Ayarlar" },
   { href: "/admin/audit", label: "Geçmiş" },

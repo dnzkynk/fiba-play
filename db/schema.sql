@@ -67,6 +67,18 @@ CREATE TABLE IF NOT EXISTS admins (
 INSERT INTO admins (full_name, email, password) VALUES ('Deniz', 'admin@fiba.com', 'fiba2026')
 ON CONFLICT (email) DO NOTHING;
 
+-- Siteden yapılan turnuva başvuruları (İK listesi yerine self-servis)
+CREATE TABLE IF NOT EXISTS applications (
+  id         SERIAL PRIMARY KEY,
+  full_name  TEXT NOT NULL,
+  email      TEXT NOT NULL UNIQUE,
+  phone      TEXT NOT NULL,
+  country    TEXT NOT NULL,
+  company    TEXT NOT NULL,
+  status     TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'approved', 'reserve')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS settings (
   key   TEXT PRIMARY KEY,
   value TEXT NOT NULL

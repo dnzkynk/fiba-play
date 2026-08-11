@@ -27,6 +27,13 @@ export async function PATCH(req, { params }) {
       );
       return NextResponse.json(result);
     }
+    if (body.action === "rename") {
+      const name = String(body.name ?? "").trim().slice(0, 120);
+      if (!name) return NextResponse.json({ error: "Ad boş olamaz" }, { status: 400 });
+      await q("UPDATE tournaments SET name = $1 WHERE id = $2", [name, id]);
+      await audit("tournament_rename", { id, name }, admin.email);
+      return NextResponse.json({ ok: true });
+    }
     if (body.action === "replace") {
       const result = await replaceSeat(parseInt(id, 10), parseInt(body.out, 10), parseInt(body.in, 10), admin.email);
       return NextResponse.json(result);

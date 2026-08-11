@@ -1,12 +1,14 @@
 import { redirect } from "next/navigation";
-import { isAdmin, currentPlayerEmail } from "@/lib/auth";
+import { isAdmin, currentPlayerRows } from "@/lib/auth";
 import { getT } from "@/lib/i18n";
 import { PlayerLoginForm } from "./ui";
 
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
-  if (await currentPlayerEmail()) redirect("/me");
+  // Çerez tek başına yetmez: kullanıcı DB'de hâlâ var mı bakılır — yoksa form gösterilir.
+  // (Silinmiş kullanıcının eski çerezi login↔me arasında sonsuz döngü yapıyordu.)
+  if ((await currentPlayerRows()).length) redirect("/me");
   if (await isAdmin()) redirect("/admin");
   const { t, lang } = await getT();
   const labels = {
@@ -53,6 +55,9 @@ export default async function LoginPage() {
           <h1 className="text-2xl font-semibold tracking-tight">{t("welcomeBack")} 👋</h1>
           <p className="mt-1.5 mb-8 text-sm text-stone-500">{t("loginSub")}</p>
           <PlayerLoginForm labels={labels} />
+          <p className="mt-6 text-sm text-stone-500">
+            <a className="font-medium text-fiba-700 hover:underline" href="/basvur">{t("applyLink")}</a>
+          </p>
         </div>
       </div>
     </div>

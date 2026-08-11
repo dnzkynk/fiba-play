@@ -1,3 +1,4 @@
+import { LocalTime } from "@/app/timefmt";
 import { q } from "@/lib/db";
 import { isAdmin } from "@/lib/auth";
 import { Card } from "@/components/ui/card";
@@ -43,7 +44,7 @@ export default async function AuditPage() {
             {rows.map((r) => (
               <TR key={r.id}>
                 <TD className="whitespace-nowrap tabular-nums text-stone-500">
-                  {new Date(r.created_at).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "medium" })}
+                  <LocalTime iso={r.created_at} locale="tr-TR" dateStyle="short" timeStyle="medium" />
                 </TD>
                 <TD className={r.actor === "otomatik" ? "text-stone-400" : "text-fiba-700"}>{r.actor}</TD>
                 <TD className="font-medium">{ACTION_TR[r.action] ?? r.action}</TD>

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { LocalTime } from "@/app/timefmt";
 import { isAdmin } from "@/lib/auth";
 import { tournamentWithMatches, roundName, STATUS_TR, T_STATUS_TR } from "@/lib/queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -115,10 +116,10 @@ export default async function AdminTournament({ params }) {
             <Card key={ri}>
               <CardHeader className="flex-row items-baseline justify-between">
                 <CardTitle>{roundName(ri, t.rounds.length)}</CardTitle>
-                {t.starts_at && (
+                {(t.round_times?.[ri] || t.starts_at) && (
                   <span className="text-xs font-medium text-fiba-600">
-                    🕐 {new Date(new Date(t.starts_at).getTime() + ri * t.round_interval_hours * 3600_000)
-                      .toLocaleString("tr-TR", { dateStyle: "medium", timeStyle: "short" })}
+                    🕐 <LocalTime locale="tr-TR"
+                      iso={t.round_times?.[ri] ?? new Date(new Date(t.starts_at).getTime() + ri * t.round_interval_hours * 3600_000).toISOString()} />
                   </span>
                 )}
               </CardHeader>
@@ -132,7 +133,7 @@ export default async function AdminTournament({ params }) {
                       <Badge variant={STATUS_VARIANT[m.status]}>{STATUS_TR[m.status]}</Badge>
                       {m.scheduled_at && m.status === "scheduled" && (
                         <span className="text-xs text-stone-500">
-                          🕐 {new Date(m.scheduled_at).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" })}
+                          🕐 <LocalTime iso={m.scheduled_at} locale="tr-TR" dateStyle="short" />
                         </span>
                       )}
                       {m.status === "live" && (
