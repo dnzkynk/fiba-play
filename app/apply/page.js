@@ -11,6 +11,7 @@ export default async function ApplyPage() {
     namePh: t("applyNamePh"),
     email: t("email"),
     phone: t("applyPhone"),
+    phonePh: t("applyPhonePh"),
     country: t("applyCountry"),
     countryPh: t("applyCountryPh"),
     company: t("applyCompany"),

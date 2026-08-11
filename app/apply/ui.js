@@ -70,7 +70,7 @@ export function ApplyForm({ labels, lang }) {
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="bp">{labels.phone} <span className="text-red-500">*</span></Label>
           <Input id="bp" type="tel" inputMode="tel" value={f.phone} onChange={setPhone} required
-            autoComplete="tel" placeholder="+90 5xx xxx xx xx" />
+            autoComplete="tel" placeholder={labels.phonePh} />
         </div>
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
