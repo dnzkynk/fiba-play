@@ -56,7 +56,7 @@ export default async function LoginPage() {
           <p className="mt-1.5 mb-8 text-sm text-stone-500">{t("loginSub")}</p>
           <PlayerLoginForm labels={labels} />
           <p className="mt-6 text-sm text-stone-500">
-            <a className="font-medium text-fiba-700 hover:underline" href="/basvur">{t("applyLink")}</a>
+            <a className="font-medium text-fiba-700 hover:underline" href="/apply">{t("applyLink")}</a>
           </p>
         </div>
       </div>

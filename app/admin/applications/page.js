@@ -29,7 +29,7 @@ export default async function ApplicationsPage() {
           <CardDescription>
             Siteden gelen başvurular. "Asil yap" katılımcı hesabı açar (kuraya girer),
             "Yedek yap" yedek listesine alır. Şirket temsiliyeti kuralını burada gözetebilirsiniz.
-            Başvuru adresi: <code className="rounded bg-stone-100 px-1">/basvur</code>
+            Başvuru adresi: <code className="rounded bg-stone-100 px-1">/apply</code>
           </CardDescription>
         </div>
         <a className={buttonVariants({ variant: "outline", size: "sm" })} href="/api/admin/applications/export">
@@ -39,7 +39,7 @@ export default async function ApplicationsPage() {
       <CardContent>
         {rows.length === 0 ? (
           <div className="rounded-lg border border-dashed border-stone-300 p-10 text-center text-sm text-stone-500">
-            Henüz başvuru yok. Duyuru metnindeki bağlantı katılımcıları <code>/basvur</code> sayfasına yönlendirmeli.
+            Henüz başvuru yok. Duyuru metnindeki bağlantı katılımcıları <code>/apply</code> sayfasına yönlendirmeli.
           </div>
         ) : (
           <Table>

@@ -14,6 +14,10 @@ export async function POST(req) {
 
   if (!fullName || !phone || !country || !company)
     return NextResponse.json({ error: "eksik" }, { status: 400 });
+  if (fullName.length < 5 || !fullName.includes(" "))
+    return NextResponse.json({ error: "name" }, { status: 400 });
+  if ((phone.match(/\d/g) ?? []).length < 7)
+    return NextResponse.json({ error: "phone" }, { status: 400 });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
     return NextResponse.json({ error: "email" }, { status: 400 });
   if (!/^[+\d][\d\s().-]{5,}$/.test(phone))
