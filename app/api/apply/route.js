@@ -18,6 +18,13 @@ export async function POST(req) {
     return NextResponse.json({ error: "name" }, { status: 400 });
   if ((phone.match(/\d/g) ?? []).length < 7)
     return NextResponse.json({ error: "phone" }, { status: 400 });
+
+  // Aynı telefon numarasıyla ikinci başvuru (biçimden bağımsız, rakam bazında)
+  const [phoneDupe] = await q(
+    `SELECT 1 FROM applications WHERE regexp_replace(phone, '\\D', '', 'g') = $1 LIMIT 1`,
+    [phone.replace(/\D/g, "")]
+  );
+  if (phoneDupe) return NextResponse.json({ error: "dupe-phone" }, { status: 409 });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
     return NextResponse.json({ error: "email" }, { status: 400 });
   if (!/^[+\d][\d\s().-]{5,}$/.test(phone))

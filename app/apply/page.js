@@ -21,6 +21,7 @@ export default async function ApplyPage() {
     done: t("applyDone"),
     doneSub: t("applyDoneSub"),
     dupe: t("applyDupe"),
+    dupePhone: t("applyDupePhone"),
     err: t("applyErr"),
     nameErr: t("applyNameErr"),
     phoneErr: t("applyPhoneErr"),
@@ -35,9 +36,6 @@ export default async function ApplyPage() {
             <h1 className="text-2xl font-semibold tracking-tight">{t("applyTitle")}</h1>
             <p className="mt-1.5 mb-8 text-sm leading-relaxed text-stone-500">{t("applySub")}</p>
             <ApplyForm labels={labels} lang={lang} />
-            <p className="mt-6 text-center text-sm text-stone-500">
-              <a className="font-medium text-fiba-700 hover:underline" href="/login">{t("applyLoginLink")}</a>
-            </p>
           </div>
         </div>
       </div>
