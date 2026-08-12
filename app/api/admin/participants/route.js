@@ -84,6 +84,26 @@ export async function POST(req) {
   }
 }
 
+// Parola değiştirme: aynı e-postanın tüm kayıtlarında geçerli (kişi tek parolayla girer)
+export async function PATCH(req) {
+  let admin;
+  try {
+    admin = await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+  }
+  const b = await req.json();
+  const email = (b.email ?? "").trim().toLowerCase();
+  const password = String(b.password ?? "").trim();
+  if (!email) return NextResponse.json({ error: "E-posta gerekli" }, { status: 400 });
+  if (password.length < 6)
+    return NextResponse.json({ error: "Parola en az 6 karakter olmalı" }, { status: 400 });
+  const rows = await q("UPDATE participants SET password = $1 WHERE email = $2 RETURNING id", [password, email]);
+  if (!rows.length) return NextResponse.json({ error: "Katılımcı bulunamadı" }, { status: 404 });
+  await audit("password_change", { email }, admin.email);
+  return NextResponse.json({ ok: true });
+}
+
 export async function DELETE(req) {
   let admin;
   try {

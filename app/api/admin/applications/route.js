@@ -43,7 +43,8 @@ export async function POST(req) {
     "SELECT password FROM participants WHERE email = $1 AND password IS NOT NULL LIMIT 1",
     [a.email]
   );
-  const password = existing?.password ?? generatePassword();
+  // Önceki katılımcı parolası > başvuranın seçtiği parola > otomatik üretim
+  const password = existing?.password ?? a.password ?? generatePassword();
   await q(
     `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password, is_reserve)
      VALUES ($1,$2,$3,'chess',$4,$5,$6,$7)`,

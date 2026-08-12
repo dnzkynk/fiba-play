@@ -545,3 +545,23 @@ export function ReplaceForm({ tournamentId, seated, subs }) {
     </div>
   );
 }
+
+export function ChangePasswordButton({ email }) {
+  const router = useRouter();
+  return (
+    <Button variant="outline" size="sm"
+      onClick={async () => {
+        const pw = prompt(`${email} için yeni parola (en az 6 karakter):`);
+        if (!pw) return;
+        const res = await fetch("/api/admin/participants", {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ email, password: pw }),
+        });
+        if (!res.ok) alert((await res.json()).error);
+        router.refresh();
+      }}>
+      Parola değiştir
+    </Button>
+  );
+}

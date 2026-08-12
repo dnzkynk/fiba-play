@@ -13,6 +13,7 @@ export function ApplyForm({ labels, lang }) {
   const [f, setF] = useState({ fullName: "", email: "", country: "", company: "" });
   const [dialIso, setDialIso] = useState("TR");
   const [phoneNum, setPhoneNum] = useState("");
+  const [password, setPassword] = useState("");
   const [state, setState] = useState("idle"); // idle | busy | done
   const [error, setError] = useState("");
 
@@ -45,7 +46,9 @@ export function ApplyForm({ labels, lang }) {
     if (Object.values(clean).some((v) => !v) || !digits) return setError(labels.err);
     if (clean.fullName.length < 5 || !clean.fullName.includes(" ")) return setError(labels.nameErr);
     if (digits.length < 6 || digits.length > 13) return setError(labels.phoneErr);
+    if (password.length < 6) return setError(labels.passErr);
     clean.phone = "+" + DIAL[dialIso] + " " + phoneNum.trim();
+    clean.password = password;
     setState("busy");
     const res = await fetch("/api/apply", {
       method: "POST",
@@ -107,6 +110,12 @@ export function ApplyForm({ labels, lang }) {
           <Input id="bs" value={f.company} onChange={set("company")} required maxLength={80}
             autoComplete="organization" placeholder={labels.companyPh} />
         </div>
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="bpw">{labels.password} <span className="text-red-500">*</span></Label>
+        <Input id="bpw" type="password" value={password} required minLength={6} maxLength={40}
+          onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" placeholder="••••••" />
+        <span className="text-xs text-stone-400">{labels.passHint}</span>
       </div>
       {error && (
         <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>

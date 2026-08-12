@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { buttonVariants } from "@/components/ui/button";
-import { AddParticipantForm, ImportForm, DeleteParticipantButton } from "../ui";
+import { AddParticipantForm, ImportForm, DeleteParticipantButton, ChangePasswordButton } from "../ui";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +75,7 @@ export default async function ParticipantsPage() {
                     <TD><code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{p.password}</code></TD>
                     <TD className="text-right">
                       <span className="flex justify-end gap-1.5">
+                        <ChangePasswordButton email={p.email} />
                         {p.entries.filter((e) => !e.assigned).map((e) => (
                           <DeleteParticipantButton key={e.id} id={e.id}
                             label={`${e.game === "chess" ? "♟" : "🎲"} çıkar`} />

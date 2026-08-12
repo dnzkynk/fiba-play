@@ -44,7 +44,7 @@ export default async function ApplicationsPage() {
         ) : (
           <Table>
             <THead>
-              <TR><TH>Ad Soyad</TH><TH>E-posta</TH><TH>Telefon</TH><TH>Ülke</TH><TH>Şirket</TH><TH>Tarih</TH><TH>Durum</TH><TH></TH></TR>
+              <TR><TH>Ad Soyad</TH><TH>E-posta</TH><TH>Telefon</TH><TH>Ülke</TH><TH>Şirket</TH><TH>Parola</TH><TH>Tarih</TH><TH>Durum</TH><TH></TH></TR>
             </THead>
             <TBody>
               {rows.map((r) => (
@@ -54,6 +54,9 @@ export default async function ApplicationsPage() {
                   <TD className="text-stone-500">{r.phone}</TD>
                   <TD>{r.country}</TD>
                   <TD>{r.company}</TD>
+                  <TD>{r.password
+                    ? <code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{r.password}</code>
+                    : <span className="text-xs text-stone-400">otomatik</span>}</TD>
                   <TD className="text-stone-500"><LocalTime iso={r.created_at} locale="tr-TR" dateStyle="short" /></TD>
                   <TD><Badge variant={STATUS[r.status].variant}>{STATUS[r.status].label}</Badge></TD>
                   <TD className="text-right"><ApplicationActions id={r.id} status={r.status} /></TD>

@@ -11,6 +11,7 @@ export async function POST(req) {
   const phone = clean(b.phone, 30);
   const country = clean(b.country, 60);
   const company = clean(b.company, 80);
+  const password = clean(b.password, 40);
 
   if (!fullName || !phone || !country || !company)
     return NextResponse.json({ error: "eksik" }, { status: 400 });
@@ -29,11 +30,13 @@ export async function POST(req) {
     return NextResponse.json({ error: "email" }, { status: 400 });
   if (!/^[+\d][\d\s().-]{5,}$/.test(phone))
     return NextResponse.json({ error: "phone" }, { status: 400 });
+  if (password.length < 6)
+    return NextResponse.json({ error: "password" }, { status: 400 });
 
   try {
     await q(
-      `INSERT INTO applications (full_name, email, phone, country, company) VALUES ($1,$2,$3,$4,$5)`,
-      [fullName, email, phone, country, company]
+      `INSERT INTO applications (full_name, email, phone, country, company, password) VALUES ($1,$2,$3,$4,$5,$6)`,
+      [fullName, email, phone, country, company, password]
     );
   } catch (err) {
     if (String(err.message).includes("applications_email_key"))

@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS applications (
   phone      TEXT NOT NULL,
   country    TEXT NOT NULL,
   company    TEXT NOT NULL,
+  password   TEXT,                          -- başvuranın kendi seçtiği giriş parolası (admin görür/değiştirir)
   status     TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'approved', 'reserve')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
