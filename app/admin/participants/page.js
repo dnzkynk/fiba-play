@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { buttonVariants } from "@/components/ui/button";
-import { AddParticipantForm, ImportForm, DeleteParticipantButton, ChangePasswordButton } from "../ui";
+import { AddParticipantForm, ImportForm, DeleteParticipantButton, ChangePasswordButton, AssignToTournament } from "../ui";
+import { decryptPassword } from "@/lib/crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export default async function ParticipantsPage() {
                              WHERE t.game = p.game AND (m.p1_id = p.id OR m.p2_id = p.id))) ORDER BY p.game) AS entries
      FROM participants p GROUP BY email ORDER BY min(full_name)`
   );
+  const draftTournaments = await q("SELECT id, name FROM tournaments WHERE status = 'draft' ORDER BY created_at DESC");
 
   return (
     <>
@@ -72,9 +74,10 @@ export default async function ParticipantsPage() {
                         ))}
                       </span>
                     </TD>
-                    <TD><code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{p.password}</code></TD>
+                    <TD><code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{decryptPassword(p.password)}</code></TD>
                     <TD className="text-right">
-                      <span className="flex justify-end gap-1.5">
+                      <span className="flex flex-wrap items-center justify-end gap-1.5">
+                        <AssignToTournament participantId={p.entries.find((e) => e.game === "chess")?.id} tournaments={draftTournaments} />
                         <ChangePasswordButton email={p.email} />
                         {p.entries.filter((e) => !e.assigned).map((e) => (
                           <DeleteParticipantButton key={e.id} id={e.id}

@@ -58,6 +58,7 @@ export function ApplyForm({ labels, lang }) {
     if (res.ok) return setState("done");
     const data = await res.json().catch(() => ({}));
     setState("idle");
+    if (res.status === 429) return setError(labels.rate);
     setError(res.status === 409 ? (data.error === "dupe-phone" ? labels.dupePhone : labels.dupe) : labels.err);
   }
 

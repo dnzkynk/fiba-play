@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { q, audit } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { decryptPassword } from "@/lib/crypto";
 
 export async function GET() {
   let admin;
@@ -20,7 +21,7 @@ export async function GET() {
   const csv = [
     ["Ad Soyad", "E-posta", "Şirket", "Turnuva", "Parola", "Giriş adresi"].map(esc).join(";"),
     ...rows.map((r) =>
-      [r.full_name, r.email, r.company, r.games, r.password, `${process.env.BASE_URL}/login`].map(esc).join(";")
+      [r.full_name, r.email, r.company, r.games, decryptPassword(r.password), `${process.env.BASE_URL}/login`].map(esc).join(";")
     ),
   ].join("\r\n");
   await audit("export_passwords", { count: rows.length }, admin.email);

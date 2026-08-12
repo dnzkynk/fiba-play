@@ -2,8 +2,14 @@
 // Aynı e-postayla ikinci başvuru reddedilir (409).
 import { NextResponse } from "next/server";
 import { q } from "@/lib/db";
+import { encryptPassword } from "@/lib/crypto";
+import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export async function POST(req) {
+  // Kötü niyetli toplu başvuruya karşı: IP başına dakikada 5
+  if (!rateLimit(`apply:${clientIp(req)}`, { max: 5, windowMs: 60_000 })) {
+    return NextResponse.json({ error: "rate" }, { status: 429 });
+  }
   const b = await req.json().catch(() => ({}));
   const clean = (v, max) => String(v ?? "").trim().slice(0, max);
   const fullName = clean(b.fullName, 100);
@@ -36,7 +42,7 @@ export async function POST(req) {
   try {
     await q(
       `INSERT INTO applications (full_name, email, phone, country, company, password) VALUES ($1,$2,$3,$4,$5,$6)`,
-      [fullName, email, phone, country, company, password]
+      [fullName, email, phone, country, company, encryptPassword(password)]
     );
   } catch (err) {
     if (String(err.message).includes("applications_email_key"))

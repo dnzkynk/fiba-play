@@ -4,7 +4,7 @@ import { isAdmin } from "@/lib/auth";
 import { tournamentWithMatches, roundName, STATUS_TR, T_STATUS_TR } from "@/lib/queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge, STATUS_VARIANT } from "@/components/ui/badge";
-import { MatchControls, SwapForm, TournamentScheduleForm, DeleteTournamentButton, ReplaceForm } from "../../ui";
+import { MatchControls, SwapForm, TournamentScheduleForm, DeleteTournamentButton, ReplaceForm, AssignPanel, DrawButton } from "../../ui";
 import { AutoRefresh } from "@/app/refresh";
 import { q } from "@/lib/db";
 
@@ -42,6 +42,23 @@ export default async function AdminTournament({ params }) {
     [t.game, t.id]
   );
 
+  // Kura öncesi (draft): havuz + atanmışlar
+  const draft = t.status === "draft";
+  const pool = draft ? await q(
+    `SELECT p.id, p.full_name, p.company FROM participants p
+     WHERE p.game = $1 AND NOT EXISTS (SELECT 1 FROM tournament_players tp
+       WHERE tp.tournament_id = $2 AND tp.participant_id = p.id)
+     ORDER BY p.full_name`,
+    [t.game, t.id]
+  ) : [];
+  const assigned = await q(
+    `SELECT p.id, p.full_name, tp.is_reserve FROM tournament_players tp
+     JOIN participants p ON p.id = tp.participant_id
+     WHERE tp.tournament_id = $1 ORDER BY tp.is_reserve, p.full_name`,
+    [t.id]
+  );
+  const asilCount = assigned.filter((a) => !a.is_reserve).length;
+
   return (
     <>
       <AutoRefresh seconds={20} />
@@ -59,6 +76,28 @@ export default async function AdminTournament({ params }) {
         </span>
       </div>
 
+      {draft && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Katılımcı atama — {asilCount}/{t.bracket_size} asil{assigned.length - asilCount > 0 ? ` (+${assigned.length - asilCount} yedek)` : ""}</CardTitle>
+            <p className="text-sm text-stone-500">
+              Bu turnuvaya kişileri havuzdan atayın. Başvurular ve Katılımcılar sekmesinden de atama yapabilirsiniz.
+              Kişi birden fazla turnuvada olabilir; aynı turnuvaya iki kez atanamaz. Hazır olunca kurayı çekin.
+            </p>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-5">
+            <AssignPanel tournamentId={t.id} pool={pool} assigned={assigned} />
+            <div className="flex items-center gap-3 border-t border-stone-100 pt-4">
+              <DrawButton tournamentId={t.id} count={asilCount} />
+              <span className="text-xs text-stone-500">
+                Kura çekilince fikstür oluşur; girdiyseniz tur saatleri de otomatik yazılır.
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {!draft && (
       <Card className="mt-6">
         <CardHeader>
           <CardTitle>Turnuva programı</CardTitle>
@@ -78,6 +117,7 @@ export default async function AdminTournament({ params }) {
           />
         </CardContent>
       </Card>
+      )}
 
       {seated.length > 0 && subs.length > 0 && (
         <Card className="mt-6">

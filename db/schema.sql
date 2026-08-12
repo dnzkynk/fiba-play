@@ -80,6 +80,15 @@ CREATE TABLE IF NOT EXISTS applications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Turnuva üyeliği: kura öncesi kişi↔turnuva bağı (çoklu üyelik; aynı turnuvaya bir kez)
+CREATE TABLE IF NOT EXISTS tournament_players (
+  tournament_id INT NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
+  participant_id INT NOT NULL REFERENCES participants(id) ON DELETE CASCADE,
+  is_reserve BOOLEAN NOT NULL DEFAULT false,
+  added_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (tournament_id, participant_id)
+);
+
 CREATE TABLE IF NOT EXISTS settings (
   key   TEXT PRIMARY KEY,
   value TEXT NOT NULL

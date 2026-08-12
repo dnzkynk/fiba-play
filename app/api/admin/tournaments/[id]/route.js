@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { q, audit } from "@/lib/db";
-import { swapSeats, scheduleTournament, replaceSeat } from "@/lib/engine";
+import { swapSeats, scheduleTournament, replaceSeat, assignPlayer, unassignPlayer, drawTournament } from "@/lib/engine";
 
 export async function PATCH(req, { params }) {
   let admin;
@@ -36,6 +36,18 @@ export async function PATCH(req, { params }) {
     }
     if (body.action === "replace") {
       const result = await replaceSeat(parseInt(id, 10), parseInt(body.out, 10), parseInt(body.in, 10), admin.email);
+      return NextResponse.json(result);
+    }
+    if (body.action === "assign") {
+      await assignPlayer(parseInt(id, 10), parseInt(body.participantId, 10), !!body.isReserve, admin.email);
+      return NextResponse.json({ ok: true });
+    }
+    if (body.action === "unassign") {
+      await unassignPlayer(parseInt(id, 10), parseInt(body.participantId, 10), admin.email);
+      return NextResponse.json({ ok: true });
+    }
+    if (body.action === "draw") {
+      const result = await drawTournament(parseInt(id, 10), admin.email);
       return NextResponse.json(result);
     }
     return NextResponse.json({ error: "Bilinmeyen işlem" }, { status: 400 });

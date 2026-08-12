@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { q } from "@/lib/db";
 import { makeSession } from "@/lib/auth";
+import { passwordMatches } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export async function POST(req) {
@@ -12,7 +13,7 @@ export async function POST(req) {
   const rows = await q("SELECT * FROM participants WHERE email = $1", [
     (email ?? "").trim().toLowerCase(),
   ]);
-  const match = rows.find((r) => r.password && r.password === (password ?? "").trim());
+  const match = rows.find((r) => r.password && passwordMatches(password, r.password));
   if (!match) {
     return NextResponse.json({ error: "E-posta veya parola hatalı" }, { status: 401 });
   }

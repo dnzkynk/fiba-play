@@ -25,6 +25,7 @@ export default async function ApplyPage() {
     doneSub: t("applyDoneSub"),
     dupe: t("applyDupe"),
     dupePhone: t("applyDupePhone"),
+    rate: t("applyRate"),
     err: t("applyErr"),
     nameErr: t("applyNameErr"),
     phoneErr: t("applyPhoneErr"),

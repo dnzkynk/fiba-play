@@ -192,25 +192,150 @@ export function ImportForm() {
   );
 }
 
-export function GenerateButton() {
+// Boş turnuva oluşturma: isim + boy + (opsiyonel) tur bazlı program.
+export function NewTournamentForm() {
+  const [name, setName] = useState("Fiba Tournament 2026 Satranç");
+  const [size, setSize] = useState("64");
+  const [open, setOpen] = useState(false);
+  const [times, setTimes] = useState([]);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+  const router = useRouter();
+
+  const rounds = Math.log2(parseInt(size, 10));
+  const roundLabel = (i) => {
+    const kalan = rounds - i;
+    return kalan === 1 ? "Final" : kalan === 2 ? "Yarı final" : kalan === 3 ? "Çeyrek final" : `${i + 1}. Tur`;
+  };
+
+  async function submit(e) {
+    e.preventDefault();
+    setMsg(null);
+    const filled = times.slice(0, rounds).filter(Boolean);
+    if (filled.length && filled.length !== rounds)
+      return setMsg({ ok: false, text: "Ya tüm tur saatlerini girin ya da hiçbirini (sonra da girebilirsiniz)." });
+    setBusy(true);
+    const res = await fetch("/api/admin/tournaments", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        name, bracketSize: parseInt(size, 10),
+        roundTimes: filled.length ? times.slice(0, rounds).map((t) => new Date(t).toISOString()) : null,
+      }),
+    });
+    const data = await res.json();
+    setBusy(false);
+    if (res.ok) { setOpen(false); setTimes([]); router.push(`/admin/t/${data.id}`); }
+    else setMsg({ ok: false, text: data.error });
+  }
+
+  if (!open) return <Button onClick={() => setOpen(true)}>+ Yeni turnuva</Button>;
+
+  return (
+    <form onSubmit={submit} className="w-full rounded-lg border border-stone-200 bg-stone-50 p-4">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-1.5">
+          <Label>Turnuva adı</Label>
+          <Input className="w-72" value={name} onChange={(e) => setName(e.target.value)} required />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label>Kişi sayısı (boy)</Label>
+          <Select className="w-32" value={size} onChange={(e) => { setSize(e.target.value); setTimes([]); }}>
+            {[8, 16, 32, 64].map((s) => <option key={s} value={s}>{s} kişilik</option>)}
+          </Select>
+        </div>
+      </div>
+      <p className="mt-4 mb-1.5 text-xs font-medium text-stone-500">
+        Tur saatleri (Türkiye saati) — opsiyonel, boş bırakırsanız kuradan sonra da girebilirsiniz:
+      </p>
+      <div className="flex flex-wrap items-end gap-3">
+        {Array.from({ length: rounds }, (_, i) => (
+          <div key={i} className="flex flex-col gap-1.5">
+            <Label className="text-xs">{roundLabel(i)}</Label>
+            <Input type="datetime-local" className="w-auto" value={times[i] ?? ""}
+              onChange={(e) => setTimes(Array.from({ length: rounds }, (_, j) => (j === i ? e.target.value : times[j] ?? "")))} />
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 flex items-center gap-3">
+        <Button type="submit" disabled={busy}>{busy ? "Oluşturuluyor…" : "Turnuvayı oluştur"}</Button>
+        <Button type="button" variant="outline" onClick={() => setOpen(false)}>Vazgeç</Button>
+        {msg && <span className="text-sm text-red-600">{msg.text}</span>}
+      </div>
+    </form>
+  );
+}
+
+// Turnuvaya kişi atama (kura öncesi): havuzdan seç + atanmışları çıkar.
+export function AssignPanel({ tournamentId, pool, assigned }) {
+  const [pid, setPid] = useState("");
+  const [reserve, setReserve] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+  const router = useRouter();
+
+  async function act(body, okMsg) {
+    setBusy(true); setMsg(null);
+    const res = await fetch(`/api/admin/tournaments/${tournamentId}`, {
+      method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    setBusy(false);
+    if (res.ok) { if (okMsg) setMsg({ ok: true, text: okMsg }); router.refresh(); }
+    else setMsg({ ok: false, text: data.error });
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-1.5">
+          <Label>Katılımcı</Label>
+          <Select className="w-64" value={pid} onChange={(e) => setPid(e.target.value)}>
+            <option value="">Havuzdan seç…</option>
+            {pool.map((p) => <option key={p.id} value={p.id}>{p.full_name}{p.company ? ` — ${p.company}` : ""}</option>)}
+          </Select>
+        </div>
+        <label className="flex h-9 cursor-pointer items-center gap-1.5 text-sm text-stone-700">
+          <input type="checkbox" className="accent-fiba-600" checked={reserve} onChange={(e) => setReserve(e.target.checked)} />
+          Yedek olarak
+        </label>
+        <Button disabled={!pid || busy} onClick={() => { act({ action: "assign", participantId: pid, isReserve: reserve }); setPid(""); }}>
+          Ata
+        </Button>
+        {msg && <span className={`pb-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
+      </div>
+      {pool.length === 0 && (
+        <p className="text-xs text-stone-400">Havuzda atanabilecek katılımcı yok — Başvurular veya Katılımcılar sekmesinden kişi ekleyin.</p>
+      )}
+      <div className="flex flex-wrap gap-2">
+        {assigned.map((p) => (
+          <span key={p.id} className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1 text-sm">
+            {p.is_reserve && <span className="text-amber-600">yedek</span>}
+            {p.full_name}
+            <button type="button" className="text-stone-400 hover:text-red-600"
+              onClick={() => act({ action: "unassign", participantId: p.id })} title="Çıkar">✕</button>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function DrawButton({ tournamentId, count }) {
   const [busy, setBusy] = useState(false);
   const router = useRouter();
   async function run() {
-    if (!confirm("Turnuvaya dağıtılmamış tüm katılımcılar için turnuvalar oluşturulup kura çekilecek. Devam?")) return;
+    if (!confirm(`${count} asil oyuncuyla kura çekilecek. Devam?`)) return;
     setBusy(true);
-    const res = await fetch("/api/admin/generate", { method: "POST" });
+    const res = await fetch(`/api/admin/tournaments/${tournamentId}`, {
+      method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "draw" }),
+    });
     const data = await res.json();
     setBusy(false);
-    if (res.ok) {
-      alert(data.created.length ? `${data.created.length} turnuva oluşturuldu` : "Dağıtılacak yeni katılımcı yok");
-      router.refresh();
-    } else alert(data.error);
+    if (res.ok) router.refresh();
+    else alert(data.error);
   }
-  return (
-    <Button onClick={run} disabled={busy}>
-      {busy ? "Kura çekiliyor…" : "Kura çek"}
-    </Button>
-  );
+  return <Button onClick={run} disabled={busy}>{busy ? "Kura çekiliyor…" : "Kurayı çek"}</Button>;
 }
 
 export function SettingsForm({ initial }) {
@@ -563,5 +688,34 @@ export function ChangePasswordButton({ email }) {
       }}>
       Parola değiştir
     </Button>
+  );
+}
+
+// Katılımcılar sekmesinden hızlı turnuva ataması
+export function AssignToTournament({ participantId, tournaments }) {
+  const router = useRouter();
+  const [tid, setTid] = useState("");
+  const [busy, setBusy] = useState(false);
+  if (!tournaments.length) return null;
+  async function run(isReserve) {
+    if (!tid) return;
+    setBusy(true);
+    const res = await fetch(`/api/admin/tournaments/${tid}`, {
+      method: "PATCH", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ action: "assign", participantId, isReserve }),
+    });
+    const data = await res.json();
+    setBusy(false);
+    if (!res.ok) alert(data.error); else router.refresh();
+  }
+  return (
+    <span className="flex items-center gap-1">
+      <Select className="h-8 w-36 text-xs" value={tid} onChange={(e) => setTid(e.target.value)}>
+        <option value="">Turnuvaya ata…</option>
+        {tournaments.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+      </Select>
+      <Button size="sm" variant="outline" disabled={!tid || busy} onClick={() => run(false)}>Asil</Button>
+      <Button size="sm" variant="outline" disabled={!tid || busy} onClick={() => run(true)}>Yedek</Button>
+    </span>
   );
 }

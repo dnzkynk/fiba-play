@@ -7,6 +7,7 @@ import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { buttonVariants } from "@/components/ui/button";
 import { LocalTime } from "@/app/timefmt";
 import { ApplicationActions } from "./ui";
+import { decryptPassword } from "@/lib/crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,10 @@ export default async function ApplicationsPage() {
   if (!(await isAdmin())) return null;
   const rows = await q("SELECT * FROM applications ORDER BY created_at DESC");
   const bekleyen = rows.filter((r) => r.status === "new").length;
+  // Onay sırasında atanabilecek turnuvalar (henüz kura çekilmemiş)
+  const draftTournaments = await q(
+    "SELECT id, name FROM tournaments WHERE status = 'draft' ORDER BY created_at DESC"
+  );
 
   return (
     <Card>
@@ -55,11 +60,11 @@ export default async function ApplicationsPage() {
                   <TD>{r.country}</TD>
                   <TD>{r.company}</TD>
                   <TD>{r.password
-                    ? <code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{r.password}</code>
+                    ? <code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{decryptPassword(r.password)}</code>
                     : <span className="text-xs text-stone-400">otomatik</span>}</TD>
                   <TD className="text-stone-500"><LocalTime iso={r.created_at} locale="tr-TR" dateStyle="short" /></TD>
                   <TD><Badge variant={STATUS[r.status].variant}>{STATUS[r.status].label}</Badge></TD>
-                  <TD className="text-right"><ApplicationActions id={r.id} status={r.status} /></TD>
+                  <TD className="text-right"><ApplicationActions id={r.id} status={r.status} tournaments={draftTournaments} /></TD>
                 </TR>
               ))}
             </TBody>
