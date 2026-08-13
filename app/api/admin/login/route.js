@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { q, audit } from "@/lib/db";
-import { makeSession } from "@/lib/auth";
+import { makeSession, COOKIE_OPTS } from "@/lib/auth";
+import { passwordMatches } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export async function POST(req) {
@@ -12,15 +13,13 @@ export async function POST(req) {
   const [admin] = await q("SELECT * FROM admins WHERE email = $1", [
     (email ?? "").trim().toLowerCase(),
   ]);
-  if (!admin || admin.password !== (password ?? "").trim()) {
+  if (!admin || !passwordMatches(password, admin.password)) {
     return NextResponse.json({ error: "E-posta veya parola hatalı" }, { status: 401 });
   }
   const store = await cookies();
   store.delete("fiba_user"); // aynı tarayıcıda admin+oyuncu karışmasın
   store.set("fiba_admin", makeSession(`admin:${admin.email}`), {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
+    ...COOKIE_OPTS,
     maxAge: 60 * 60 * 24 * 14,
   });
   await audit("admin_login", { email: admin.email }, admin.email);

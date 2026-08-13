@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
+import { encryptPassword } from "@/lib/crypto";
 
 export async function POST(req) {
   let me;
@@ -17,13 +18,15 @@ export async function POST(req) {
     return NextResponse.json({ error: "Geçerli bir e-posta girin" }, { status: 400 });
 
   const password = b.password?.trim() || generatePassword();
+  if (password.length < 8)
+    return NextResponse.json({ error: "Yönetici parolası en az 8 karakter olmalı" }, { status: 400 });
   try {
     const [a] = await q(
-      "INSERT INTO admins (full_name, email, password) VALUES ($1, $2, $3) RETURNING id, full_name, email, password",
-      [b.fullName.trim(), email, password]
+      "INSERT INTO admins (full_name, email, password) VALUES ($1, $2, $3) RETURNING id, full_name, email",
+      [b.fullName.trim(), email, encryptPassword(password)]
     );
     await audit("admin_add", { email }, me.email);
-    return NextResponse.json(a);
+    return NextResponse.json({ ...a, password }); // düz parola yalnız bu yanıtta gösterilir
   } catch (err) {
     if (err.code === "23505")
       return NextResponse.json({ error: "Bu e-posta zaten yönetici" }, { status: 400 });

@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { q } from "@/lib/db";
-import { makeSession } from "@/lib/auth";
+import { makeSession, COOKIE_OPTS } from "@/lib/auth";
 import { passwordMatches } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 
@@ -20,10 +20,8 @@ export async function POST(req) {
   const store = await cookies();
   store.delete("fiba_admin"); // aynı tarayıcıda admin+oyuncu karışmasın
   store.set("fiba_user", makeSession(match.email), {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
+    ...COOKIE_OPTS,
+    maxAge: 60 * 60 * 24 * 14,
   });
   return NextResponse.json({ ok: true });
 }
