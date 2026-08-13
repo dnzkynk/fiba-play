@@ -1,0 +1,6 @@
+# SITE_ADDRESS alan adı ise Caddy otomatik Let's Encrypt sertifikası alır.
+# ":80" ise (alan adı yokken) düz HTTP servis eder.
+{$SITE_ADDRESS} {
+	encode zstd gzip
+	reverse_proxy app:3000
+}
