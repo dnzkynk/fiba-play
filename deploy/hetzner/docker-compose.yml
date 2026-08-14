@@ -44,6 +44,7 @@ services:
       - "443:443"
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS}
+      WWW_ADDRESS: ${WWW_ADDRESS:-www.localhost}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddydata:/data

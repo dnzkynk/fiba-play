@@ -1,5 +1,9 @@
-# SITE_ADDRESS alan adı ise Caddy otomatik Let's Encrypt sertifikası alır.
-# ":80" ise (alan adı yokken) düz HTTP servis eder.
+# www → kök alan adına kalıcı yönlendirme (oturum çerezleri tek alan adında kalsın)
+{$WWW_ADDRESS} {
+	redir https://{$SITE_ADDRESS}{uri} permanent
+}
+
+# Asıl site — Caddy Let's Encrypt sertifikasını otomatik alır ve yeniler
 {$SITE_ADDRESS} {
 	encode zstd gzip
 	reverse_proxy app:3000
