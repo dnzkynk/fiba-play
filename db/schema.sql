@@ -63,9 +63,9 @@ CREATE TABLE IF NOT EXISTS admins (
   password   TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
--- İlk yönetici (girişten sonra panelden yenilerini ekleyip bunu silebilirsiniz)
-INSERT INTO admins (full_name, email, password) VALUES ('Deniz', 'admin@fiba.com', 'fiba2026')
-ON CONFLICT (email) DO NOTHING;
+-- İlk yönetici, ortam değişkenlerinden kurulur (kaynak kodda sabit parola tutulmaz):
+--   SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD
+-- Bunlar verilmezse hiç yönetici oluşturulmaz; lib/db.js kurulum sırasında ekler.
 
 -- Siteden yapılan turnuva başvuruları (İK listesi yerine self-servis)
 CREATE TABLE IF NOT EXISTS applications (

@@ -29,7 +29,7 @@ export async function POST() {
   for (const gr of groups) {
     if (gr.n < 2) continue;
     if (gr.game === "tavla" && !TAVLA_ENABLED) continue;
-    const name = `Fiba Tournament 2026 ${GAME_LABEL[gr.game]} — ${gr.bracket_size} kişilik`;
+    const name = `Fiba Games 2026 ${GAME_LABEL[gr.game]} — ${gr.bracket_size} kişilik`;
     const [t] = await q(
       `INSERT INTO tournaments (name, game, bracket_size) VALUES ($1,$2,$3) RETURNING *`,
       [name, gr.game, gr.bracket_size]

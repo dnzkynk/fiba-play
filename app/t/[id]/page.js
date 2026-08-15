@@ -50,7 +50,7 @@ export default async function TournamentPage({ params }) {
   return (
     <>
       <AutoRefresh seconds={20} />
-      <img src="/ust-banner.png" alt="Fiba Tournament" className="w-full rounded-2xl shadow-sm" />
+      <img src="/ust-banner.png" alt="Fiba Games" className="w-full rounded-2xl shadow-sm" />
       <section className="mt-6 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-bold tracking-tight">
           {t.game === "chess" ? "♟" : "🎲"} {tournamentTitle(tr, lang, t.game, t.bracket_size)}

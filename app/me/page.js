@@ -69,7 +69,7 @@ export default async function MePage() {
       <AutoRefresh seconds={15} />
 
       {/* Karşılama bandı */}
-      <img src="/ust-banner.png" alt="Fiba Tournament" className="w-full rounded-2xl shadow-sm" />
+      <img src="/ust-banner.png" alt="Fiba Games" className="w-full rounded-2xl shadow-sm" />
       <section className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           {t("hello")}, {me.full_name.split(" ")[0]} 👋

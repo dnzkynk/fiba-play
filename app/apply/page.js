@@ -35,7 +35,7 @@ export default async function ApplyPage() {
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center py-4">
       <div className="w-full max-w-2xl">
         <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-xl">
-          <img src="/ust-banner.png" alt="Fiba Tournament" className="w-full" />
+          <img src="/ust-banner.png" alt="Fiba Games" className="w-full" />
           <div className="p-8 sm:p-10">
             <h1 className="text-2xl font-semibold tracking-tight">{t("applyTitle")}</h1>
             <p className="mt-1.5 mb-8 text-sm leading-relaxed text-stone-500">{t("applySub")}</p>

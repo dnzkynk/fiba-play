@@ -5,7 +5,7 @@ import { UserMenu, LangSwitcher, NavLink } from "./nav";
 import { brandLogoPath } from "@/lib/brand";
 
 export const metadata = {
-  title: "Fiba Tournament 2026 — Satranç",
+  title: "Fiba Games 2026 — Chess",
   description: "FIBA Holding şirketleri arası online satranç turnuvası",
 };
 
@@ -14,7 +14,7 @@ export default async function RootLayout({ children }) {
   const playerRows = await currentPlayerRows();
   const player = playerRows[0] ?? null;
   const { lang, t } = await getT();
-  const brand = "Fiba Tournament 2026";
+  const brand = "Fiba Games 2026";
   const logo = brandLogoPath();
 
   return (

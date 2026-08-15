@@ -30,7 +30,7 @@ export default async function LoginPage() {
           <p className="text-sm font-semibold tracking-wide text-fiba-700">FIBA Holding</p>
 
           <div className="flex flex-col items-center py-6 text-center">
-            <img src="/giris-banner.png" alt="Fiba Tournament" className="w-full max-w-md" />
+            <img src="/giris-banner.png" alt="Fiba Games" className="w-full max-w-md" />
             <p className="mt-6 max-w-md text-lg font-medium leading-snug text-stone-600 text-balance">
               {t("brandTagline")}
             </p>
@@ -51,7 +51,7 @@ export default async function LoginPage() {
 
         {/* Form paneli */}
         <div className="flex flex-col justify-center p-8 sm:p-12 lg:col-span-2">
-          <img src="/logo.png" alt="Fiba Tournament" className="mb-8 h-20 w-auto self-start object-contain lg:hidden" />
+          <img src="/logo.png" alt="Fiba Games" className="mb-8 h-20 w-auto self-start object-contain lg:hidden" />
           <h1 className="text-2xl font-semibold tracking-tight">{t("welcomeBack")} 👋</h1>
           <p className="mt-1.5 mb-8 text-sm text-stone-500">{t("loginSub")}</p>
           <PlayerLoginForm labels={labels} />

@@ -194,7 +194,7 @@ export function ImportForm() {
 
 // Boş turnuva oluşturma: isim + boy + (opsiyonel) tur bazlı program.
 export function NewTournamentForm() {
-  const [name, setName] = useState("Fiba Tournament 2026 Satranç");
+  const [name, setName] = useState("Fiba Games 2026 Satranç");
   const [size, setSize] = useState("64");
   const [open, setOpen] = useState(false);
   const [times, setTimes] = useState([]);
