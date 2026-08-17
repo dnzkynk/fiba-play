@@ -167,9 +167,15 @@ export default async function AdminTournament({ params }) {
                 {playable.map((m) => (
                   <div key={m.id} className="py-3.5 first:pt-0 last:pb-0">
                     <div className="flex flex-wrap items-center gap-2.5">
-                      <span className="font-medium">{m.p1_name ?? "—"}</span>
+                      <span className="font-medium inline-flex items-center gap-1">
+                        {t.game === "chess" && m.p1_name && <span title="Beyaz">⚪</span>}
+                        {m.p1_name ?? "—"}
+                      </span>
                       <span className="text-xs text-stone-400">vs</span>
-                      <span className="font-medium">{m.p2_name ?? "—"}</span>
+                      <span className="font-medium inline-flex items-center gap-1">
+                        {t.game === "chess" && m.p2_name && <span title="Siyah">⚫</span>}
+                        {m.p2_name ?? "—"}
+                      </span>
                       <Badge variant={STATUS_VARIANT[m.status]}>{STATUS_TR[m.status]}</Badge>
                       {m.scheduled_at && m.status === "scheduled" && (
                         <span className="text-xs text-stone-500">

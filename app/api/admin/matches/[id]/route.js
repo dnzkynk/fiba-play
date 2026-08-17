@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { q, audit } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { recordResult, resetMatch } from "@/lib/engine";
-import { startMatch, ensureWatcher } from "@/lib/watcher";
+import { startMatch, checkMatchStatus, ensureWatcher } from "@/lib/watcher";
 
 export async function PATCH(req, { params }) {
   let admin;
@@ -31,6 +31,10 @@ export async function PATCH(req, { params }) {
       }
       case "start": {
         await startMatch(matchId);
+        break;
+      }
+      case "check": {
+        await checkMatchStatus(matchId);
         break;
       }
       case "result": {

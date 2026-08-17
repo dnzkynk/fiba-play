@@ -499,9 +499,19 @@ async function patchMatch(id, body) {
 
 export function MatchControls({ match }) {
   const [at, setAt] = useState("");
+  const [checking, setChecking] = useState(false);
   const router = useRouter();
   const m = match;
   const done = () => router.refresh();
+
+  const isChess = !m.game || m.game === "chess" || (!m.room_password && m.game_url?.includes("lichess"));
+
+  async function checkLichess() {
+    setChecking(true);
+    await patchMatch(m.id, { action: "check" });
+    setChecking(false);
+    done();
+  }
 
   return (
     <div className="mt-2 flex flex-wrap items-end gap-2">
@@ -522,21 +532,26 @@ export function MatchControls({ match }) {
       )}
       {m.status === "live" && (
         <>
-          {m.p1_joined_at && m.p2_joined_at ? (
-            <a className="inline-flex h-8 items-center rounded-md border border-stone-300 bg-white px-3 text-xs font-medium shadow-sm hover:bg-stone-100"
-              href={m.game_url} target="_blank" rel="noreferrer">İzle ↗</a>
-          ) : (
-            <span className="text-xs text-stone-400">İzleme, iki oyuncu da girince açılır</span>
+          {m.game_url && (
+            <a className="inline-flex h-8 items-center rounded-md border border-stone-300 bg-white px-3 text-xs font-medium shadow-sm hover:bg-stone-100 text-stone-700"
+              href={m.game_url} target="_blank" rel="noreferrer">
+              İzle ↗ {(!m.p1_joined_at || !m.p2_joined_at) && <span className="ml-1 text-stone-400 font-normal">(katılım bekleniyor)</span>}
+            </a>
           )}
-          <Button variant="outline" size="sm"
-            onClick={() => confirm(`${m.p1_name} kazandı olarak işaretlensin mi?`) &&
+          {isChess && (
+            <Button variant="secondary" size="sm" disabled={checking} onClick={checkLichess}>
+              {checking ? "Kontrol ediliyor..." : "⚡ Lichess'i Kontrol Et"}
+            </Button>
+          )}
+          <Button variant="outline" size="sm" className="border-stone-300"
+            onClick={() => confirm(`${m.p1_name} (Beyaz) kazandı olarak işaretlensin mi?`) &&
               patchMatch(m.id, { action: "result", winnerId: m.p1_id }).then(done)}>
-            ✓ {m.p1_name}
+            ✓ {isChess ? "⚪ " : ""}{m.p1_name}{isChess ? " (Beyaz)" : ""}
           </Button>
-          <Button variant="outline" size="sm"
-            onClick={() => confirm(`${m.p2_name} kazandı olarak işaretlensin mi?`) &&
+          <Button variant="outline" size="sm" className="border-stone-300"
+            onClick={() => confirm(`${m.p2_name} (Siyah) kazandı olarak işaretlensin mi?`) &&
               patchMatch(m.id, { action: "result", winnerId: m.p2_id }).then(done)}>
-            ✓ {m.p2_name}
+            ✓ {isChess ? "⚫ " : ""}{m.p2_name}{isChess ? " (Siyah)" : ""}
           </Button>
           <Button variant="destructive" size="sm"
             onClick={() => confirm("Maç sıfırlanıp yeni oyun linki üretilecek. Devam?") &&

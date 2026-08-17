@@ -104,10 +104,17 @@ export default async function MePage() {
                     </span>
                     <Badge variant={STATUS_VARIANT[m.status]}>{t(`st_${m.status}`)}</Badge>
                   </div>
-                  <p className="mt-3 text-xl">
-                    {t("you")} <span className="text-stone-400">{t("vs")}</span>{" "}
-                    <strong>{m.opponent ?? t("waitingOpponent")}</strong>
-                  </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <p className="text-xl">
+                      {t("you")} <span className="text-stone-400">{t("vs")}</span>{" "}
+                      <strong>{m.opponent ?? t("waitingOpponent")}</strong>
+                    </p>
+                    {m.tgame === "chess" && (
+                      <Badge variant="outline" className="text-xs">
+                        {m.i_am_p1 ? "⚪ Beyaz / White" : "⚫ Siyah / Black"}
+                      </Badge>
+                    )}
+                  </div>
                   {m.status === "scheduled" && m.scheduled_at && (
                     <div className="mt-3 rounded-lg bg-fiba-50 p-3 text-sm">
                       🕐 <strong><LocalTime iso={m.scheduled_at} locale={locale} dateStyle="full" /></strong>

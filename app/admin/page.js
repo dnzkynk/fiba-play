@@ -89,13 +89,19 @@ export default async function AdminDashboard() {
                 {live.map((m) => (
                   <div key={m.id} className="flex flex-wrap items-center gap-2 py-2.5 text-sm">
                     <span>{ICON[m.game]}</span>
-                    <span className="font-medium">{m.p1n}</span>
+                    <span className="font-medium inline-flex items-center gap-1">
+                      {m.game === "chess" && <span title="Beyaz">⚪</span>}
+                      {m.p1n}
+                    </span>
                     <span className="text-xs text-stone-400">vs</span>
-                    <span className="font-medium">{m.p2n}</span>
+                    <span className="font-medium inline-flex items-center gap-1">
+                      {m.game === "chess" && <span title="Siyah">⚫</span>}
+                      {m.p2n}
+                    </span>
                     <span className="text-xs text-stone-400">· Tur {m.round}</span>
                     <span className="ml-auto flex items-center gap-2 text-xs">
                       <span title="katılım">{m.p1_joined_at ? "✅" : "⏳"}{m.p2_joined_at ? "✅" : "⏳"}</span>
-                      {m.game === "chess" && m.game_url && m.p1_joined_at && m.p2_joined_at && (
+                      {m.game === "chess" && m.game_url && (
                         <a className="font-medium text-amber-700" href={m.game_url} target="_blank" rel="noreferrer">İzle ↗</a>
                       )}
                       <a className="font-medium text-fiba-600" href={`/admin/t/${m.tournament_id}`}>Yönet →</a>
