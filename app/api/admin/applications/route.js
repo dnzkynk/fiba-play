@@ -5,6 +5,8 @@ import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
 import { hashPassword } from "@/lib/crypto";
 import { assignPlayer } from "@/lib/engine";
+import { sendMail } from "@/lib/mail";
+import { acceptedMail } from "@/lib/mailtemplates";
 
 export async function POST(req) {
   let admin;
@@ -54,6 +56,9 @@ export async function POST(req) {
   }
 
   await q("UPDATE applications SET status = $1 WHERE id = $2", [isReserve ? "reserve" : "approved", id]);
+  // Kabul bildirimi (SMTP tanımlı değilse sessizce atlanır)
+  const { subject, html } = acceptedMail(a.full_name.split(" ")[0], isReserve, "tr");
+  await sendMail({ to: a.email, subject, html });
   await audit("application_convert", { id, email: a.email, isReserve, tournamentId: tid || null }, admin.email);
   return NextResponse.json({
     ok: true,

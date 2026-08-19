@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { q, audit } from "@/lib/db";
 import { makeResetToken } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
+import { sendMail, mailEnabled } from "@/lib/mail";
+import { resetMail } from "@/lib/mailtemplates";
+import { getLang } from "@/lib/i18n";
 
 const TTL_MIN = 60;
 
@@ -22,10 +25,17 @@ export async function POST(req) {
        VALUES ($1, $2, now() + make_interval(mins => $3))`,
       [mail, hash, TTL_MIN]
     );
-    await audit("password_reset_requested", { email: mail }, "oyuncu");
-    // E-posta altyapısı yok: bağlantı yöneticiye panelde görünür, oradan iletilir.
-    // (SMTP eklenirse burada gönderim yapılır.)
-    if (process.env.NODE_ENV !== "production") console.log("sıfırlama bağlantısı:", `/reset?token=${raw}`);
+    const url = `${process.env.BASE_URL ?? ""}/reset?token=${raw}`;
+    if (mailEnabled) {
+      const lang = await getLang();
+      const { subject, html } = resetMail(url, lang);
+      const r = await sendMail({ to: mail, subject, html });
+      await audit("password_reset_requested", { email: mail, mail: r.sent }, "oyuncu");
+    } else {
+      // SMTP yoksa bağlantı yönetici panelinden elle iletilir
+      await audit("password_reset_requested", { email: mail, mail: false }, "oyuncu");
+      if (process.env.NODE_ENV !== "production") console.log("sıfırlama bağlantısı:", url);
+    }
   }
   return NextResponse.json({ ok: true });
 }

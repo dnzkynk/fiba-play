@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { q } from "@/lib/db";
 import { hashPassword } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
+import { sendMail } from "@/lib/mail";
+import { applyReceivedMail } from "@/lib/mailtemplates";
+import { getLang } from "@/lib/i18n";
 
 export async function POST(req) {
   // Kötü niyetli toplu başvuruya karşı: IP başına dakikada 5
@@ -49,5 +52,8 @@ export async function POST(req) {
       return NextResponse.json({ error: "dupe" }, { status: 409 });
     throw err;
   }
+  const lang = await getLang();
+  const { subject, html } = applyReceivedMail(fullName.split(" ")[0], lang);
+  await sendMail({ to: email, subject, html }); // SMTP yoksa sessizce atlanır
   return NextResponse.json({ ok: true });
 }
