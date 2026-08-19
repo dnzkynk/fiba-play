@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
-import { encryptPassword } from "@/lib/crypto";
+import { hashPassword } from "@/lib/crypto";
 import { TAVLA_ENABLED } from "@/lib/features";
 
 function parseCsv(text) {
@@ -73,7 +73,7 @@ export async function POST(req) {
         `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password, is_reserve)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
         [r.fullName, r.email, r.company || null, r.game, r.size,
-         crypto.randomBytes(16).toString("hex"), existing?.password ?? encryptPassword(generatePassword()), r.isReserve]
+         crypto.randomBytes(16).toString("hex"), existing?.password ?? hashPassword(generatePassword()), r.isReserve]
       );
       inserted++;
     }

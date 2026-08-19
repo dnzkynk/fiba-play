@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
-import { encryptPassword, decryptPassword } from "@/lib/crypto";
+import { hashPassword } from "@/lib/crypto";
 import { assignPlayer } from "@/lib/engine";
 
 export async function POST(req) {
@@ -34,7 +34,7 @@ export async function POST(req) {
     [a.email]
   );
   if (!participant) {
-    const password = a.password ?? encryptPassword(generatePassword());
+    const password = a.password ?? hashPassword(generatePassword());
     [participant] = await q(
       `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password, is_reserve)
        VALUES ($1,$2,$3,'chess',64,$4,$5,$6) RETURNING *`,
@@ -57,7 +57,7 @@ export async function POST(req) {
   await audit("application_convert", { id, email: a.email, isReserve, tournamentId: tid || null }, admin.email);
   return NextResponse.json({
     ok: true,
-    password: decryptPassword(participant.password),
+    // parola gösterilmez; kullanıcı kendi belirlediği parolayla girer veya sıfırlama bağlantısı kullanır
     assignError,
   });
 }

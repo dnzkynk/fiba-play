@@ -33,12 +33,12 @@ export function PlayerLoginForm({ labels }) {
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="email">{labels.email}</Label>
         <Input id="email" type="email" autoComplete="email" required
-          value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ad.soyad@fiba.com" />
+          value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name.surname@company.com" />
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="password">{labels.password}</Label>
         <Input id="password" type="password" required
-          value={password} onChange={(e) => setPassword(e.target.value)} placeholder="fiba-······" />
+          value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <Button type="submit" disabled={busy} className="w-full">

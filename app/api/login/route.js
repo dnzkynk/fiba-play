@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { q } from "@/lib/db";
 import { makeSession, COOKIE_OPTS } from "@/lib/auth";
-import { passwordMatches } from "@/lib/crypto";
+import { passwordMatches, needsUpgrade, hashPassword } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export async function POST(req) {
@@ -16,6 +16,12 @@ export async function POST(req) {
   const match = rows.find((r) => r.password && passwordMatches(password, r.password));
   if (!match) {
     return NextResponse.json({ error: "E-posta veya parola hatalı" }, { status: 401 });
+  }
+  // Eski biçim (şifreli/düz) parola başarıyla doğrulandıysa kalıcı olarak hash'e yükselt
+  if (needsUpgrade(match.password)) {
+    await q("UPDATE participants SET password = $1 WHERE email = $2", [
+      hashPassword(String(password).trim()), match.email,
+    ]);
   }
   const store = await cookies();
   store.delete("fiba_admin"); // aynı tarayıcıda admin+oyuncu karışmasın

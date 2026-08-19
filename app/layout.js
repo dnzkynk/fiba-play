@@ -6,7 +6,7 @@ import { brandLogoPath } from "@/lib/brand";
 
 export const metadata = {
   title: "Fiba Games 2026 — Chess",
-  description: "FIBA Holding şirketleri arası online satranç turnuvası",
+  description: "Fiba Group şirketleri arası online satranç turnuvası",
 };
 
 export default async function RootLayout({ children }) {
@@ -55,7 +55,7 @@ export default async function RootLayout({ children }) {
         <footer className="border-t border-stone-200 bg-white">
           <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-5 text-xs text-stone-400 sm:px-8">
             <span>♟ {brand} · {t("footerNote")}</span>
-            <span>FIBA Holding © 2026</span>
+            <span>Fiba Group © 2026</span>
           </div>
         </footer>
       </body>

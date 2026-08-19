@@ -27,7 +27,7 @@ export default async function LoginPage() {
 
         {/* Marka paneli */}
         <div className="relative hidden flex-col justify-between border-r border-stone-200 bg-white p-10 lg:col-span-3 lg:flex">
-          <p className="text-sm font-semibold tracking-wide text-fiba-700">FIBA Holding</p>
+          <p className="text-sm font-semibold tracking-wide text-fiba-700">Fiba Group</p>
 
           <div className="flex flex-col items-center py-6 text-center">
             <img src="/giris-banner.png" alt="Fiba Games" className="w-full max-w-md" />
@@ -55,6 +55,9 @@ export default async function LoginPage() {
           <h1 className="text-2xl font-semibold tracking-tight">{t("welcomeBack")} 👋</h1>
           <p className="mt-1.5 mb-8 text-sm text-stone-500">{t("loginSub")}</p>
           <PlayerLoginForm labels={labels} />
+          <p className="mt-4 text-sm">
+            <a className="text-stone-500 hover:text-fiba-700 hover:underline" href="/forgot">{t("forgotLink")}</a>
+          </p>
           <p className="mt-6 text-sm text-stone-500">
             <a className="font-medium text-fiba-700 hover:underline" href="/apply">{t("applyLink")}</a>
           </p>

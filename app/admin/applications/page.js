@@ -7,7 +7,6 @@ import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { buttonVariants } from "@/components/ui/button";
 import { LocalTime } from "@/app/timefmt";
 import { ApplicationActions } from "./ui";
-import { decryptPassword } from "@/lib/crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -60,7 +59,7 @@ export default async function ApplicationsPage() {
                   <TD>{r.country}</TD>
                   <TD>{r.company}</TD>
                   <TD>{r.password
-                    ? <code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{decryptPassword(r.password)}</code>
+                    ? <span className="text-xs text-emerald-700">kendi belirledi</span>
                     : <span className="text-xs text-stone-400">otomatik</span>}</TD>
                   <TD className="text-stone-500"><LocalTime iso={r.created_at} locale="tr-TR" dateStyle="short" /></TD>
                   <TD><Badge variant={STATUS[r.status].variant}>{STATUS[r.status].label}</Badge></TD>

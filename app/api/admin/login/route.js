@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { q, audit } from "@/lib/db";
 import { makeSession, COOKIE_OPTS } from "@/lib/auth";
-import { passwordMatches } from "@/lib/crypto";
+import { passwordMatches, needsUpgrade, hashPassword } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export async function POST(req) {
@@ -15,6 +15,11 @@ export async function POST(req) {
   ]);
   if (!admin || !passwordMatches(password, admin.password)) {
     return NextResponse.json({ error: "E-posta veya parola hatalı" }, { status: 401 });
+  }
+  if (needsUpgrade(admin.password)) {
+    await q("UPDATE admins SET password = $1 WHERE id = $2", [
+      hashPassword(String(password).trim()), admin.id,
+    ]);
   }
   const store = await cookies();
   store.delete("fiba_user"); // aynı tarayıcıda admin+oyuncu karışmasın

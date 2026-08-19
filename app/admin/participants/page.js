@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { buttonVariants } from "@/components/ui/button";
-import { AddParticipantForm, ImportForm, DeleteParticipantButton, ChangePasswordButton, AssignToTournament } from "../ui";
-import { decryptPassword } from "@/lib/crypto";
+import { AddParticipantForm, ImportForm, DeleteParticipantButton, ResetPasswordButtons, AssignToTournament } from "../ui";
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +45,7 @@ export default async function ParticipantsPage() {
       <Card className="mt-6">
         <CardHeader>
           <CardTitle>Katılımcılar ({people.length} kişi)</CardTitle>
-          <CardDescription>Parolaları katılımcılara siz iletiyorsunuz — CSV indirip İK'ya verebilirsiniz.</CardDescription>
+          <CardDescription>Parolalar geri döndürülemez şekilde saklanır — kimse (yönetici dahil) göremez. Unutan kişiye <b>sıfırlama bağlantısı</b> üretip iletin ya da yeni parola atayın.</CardDescription>
         </CardHeader>
         <CardContent>
           {people.length === 0 ? (
@@ -56,7 +55,7 @@ export default async function ParticipantsPage() {
           ) : (
             <Table>
               <THead>
-                <TR><TH>Ad Soyad</TH><TH>E-posta</TH><TH>Şirket</TH><TH>Katıldığı oyunlar</TH><TH>Parola</TH><TH></TH></TR>
+                <TR><TH>Ad Soyad</TH><TH>E-posta</TH><TH>Şirket</TH><TH>Katıldığı oyunlar</TH><TH></TH></TR>
               </THead>
               <TBody>
                 {people.map((p) => (
@@ -74,11 +73,10 @@ export default async function ParticipantsPage() {
                         ))}
                       </span>
                     </TD>
-                    <TD><code className="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-xs">{decryptPassword(p.password)}</code></TD>
                     <TD className="text-right">
                       <span className="flex flex-wrap items-center justify-end gap-1.5">
                         <AssignToTournament participantId={p.entries.find((e) => e.game === "chess")?.id} tournaments={draftTournaments} />
-                        <ChangePasswordButton email={p.email} />
+                        <ResetPasswordButtons email={p.email} />
                         {p.entries.filter((e) => !e.assigned).map((e) => (
                           <DeleteParticipantButton key={e.id} id={e.id}
                             label={`${e.game === "chess" ? "♟" : "🎲"} çıkar`} />

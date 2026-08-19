@@ -83,12 +83,12 @@ export function ApplyForm({ labels, lang }) {
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="be">{labels.email} <span className="text-red-500">*</span></Label>
           <Input id="be" type="email" value={f.email} onChange={set("email")} required
-            autoComplete="email" placeholder="ad.soyad@fiba.com" />
+            autoComplete="email" placeholder="name.surname@company.com" />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="bp">{labels.phone} <span className="text-red-500">*</span></Label>
           <div className="flex gap-2">
-            <Select value={dialIso} onChange={(e) => setDialIso(e.target.value)} className="w-32 shrink-0" aria-label="Alan kodu">
+            <Select value={dialIso} onChange={(e) => setDialIso(e.target.value)} className="w-32 shrink-0" aria-label={labels.phone}>
               {countries.filter((c) => DIAL[c.code]).map((c) => (
                 <option key={c.code} value={c.code} title={c.name}>{flagOf(c.code)} +{DIAL[c.code]}</option>
               ))}

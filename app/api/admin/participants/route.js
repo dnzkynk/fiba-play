@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
-import { encryptPassword, decryptPassword } from "@/lib/crypto";
+import { hashPassword } from "@/lib/crypto";
 import { TAVLA_ENABLED } from "@/lib/features";
 
 // Katılımcı listesi (otomasyon/yedekleme için)
@@ -51,7 +51,7 @@ export async function POST(req) {
   );
   // Saklanan hep şifreli; gösterime dönen düz metin ayrı tutulur
   const plainPassword = existing ? null : generatePassword();
-  const storedPassword = existing?.password ?? encryptPassword(plainPassword);
+  const storedPassword = existing?.password ?? hashPassword(plainPassword);
 
   // Aynı oyunda hâlâ kura bekleyen kaydı varsa tekrar ekleme (çifte kura önlenir);
   // önceki turnuvası kurulmuş/bitmişse yeni turnuva için tekrar kaydolabilir.
@@ -81,8 +81,8 @@ export async function POST(req) {
       created.push(p);
     }
     await audit("participant_add", { email, games }, admin.email);
-    const shown = plainPassword ?? decryptPassword(existing.password);
-    return NextResponse.json({ ...created[0], password: shown, games });
+    // Parola geri döndürülemez şekilde saklanır: yalnız YENİ üretilen parola bir kez gösterilir.
+    return NextResponse.json({ ...created[0], password: plainPassword, games });
   } catch (err) {
     throw err;
   }
@@ -102,7 +102,7 @@ export async function PATCH(req) {
   if (!email) return NextResponse.json({ error: "E-posta gerekli" }, { status: 400 });
   if (password.length < 6)
     return NextResponse.json({ error: "Parola en az 6 karakter olmalı" }, { status: 400 });
-  const rows = await q("UPDATE participants SET password = $1 WHERE email = $2 RETURNING id", [encryptPassword(password), email]);
+  const rows = await q("UPDATE participants SET password = $1 WHERE email = $2 RETURNING id", [hashPassword(password), email]);
   if (!rows.length) return NextResponse.json({ error: "Katılımcı bulunamadı" }, { status: 404 });
   await audit("password_change", { email }, admin.email);
   return NextResponse.json({ ok: true });

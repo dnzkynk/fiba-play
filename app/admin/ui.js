@@ -86,15 +86,15 @@ export function AddParticipantForm() {
       <div className="flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1.5">
           <Label>Ad Soyad</Label>
-          <Input className="w-44" value={f.fullName} onChange={set("fullName")} required placeholder="Ali Veli" />
+          <Input className="w-44" value={f.fullName} onChange={set("fullName")} required placeholder="Ad Soyad" />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label>E-posta</Label>
-          <Input className="w-52" type="email" value={f.email} onChange={set("email")} required placeholder="ali@fiba.com" />
+          <Input className="w-52" type="email" value={f.email} onChange={set("email")} required placeholder="ad.soyad@sirket.com" />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label>Şirket</Label>
-          <Input className="w-36" value={f.company} onChange={set("company")} placeholder="FibaBanka" />
+          <Input className="w-36" value={f.company} onChange={set("company")} placeholder="Şirket" />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label>Oyunlar</Label>
@@ -181,7 +181,7 @@ export function ImportForm() {
           const file = e.target.files?.[0];
           if (file) file.text().then(setCsv);
         }} />
-      <Textarea placeholder={"Ali Veli, ali.veli@fiba.com, FibaBanka, satranc, 16"}
+      <Textarea placeholder={"Ad Soyad, ad.soyad@sirket.com, Şirket, satranc, 16"}
         value={csv} onChange={(e) => setCsv(e.target.value)} />
       <div className="mt-3 flex items-center gap-2">
         <Button type="submit" disabled={!csv.trim()}>İçe aktar</Button>
@@ -686,23 +686,48 @@ export function ReplaceForm({ tournamentId, seated, subs }) {
   );
 }
 
-export function ChangePasswordButton({ email }) {
+export function ResetPasswordButtons({ email }) {
   const router = useRouter();
+  const [busy, setBusy] = useState(false);
+
+  // 1) Sıfırlama bağlantısı: yönetici parolayı görmez, kişi kendisi belirler
+  async function makeLink() {
+    setBusy(true);
+    const res = await fetch("/api/admin/reset-link", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    setBusy(false);
+    if (!res.ok) return alert(data.error);
+    try { await navigator.clipboard.writeText(data.url); } catch {}
+    prompt(
+      `${email} için sıfırlama bağlantısı (${data.expiresInHours} saat geçerli).\n` +
+      `Panoya kopyalandı — kişiye iletin:`,
+      data.url
+    );
+  }
+
+  // 2) Doğrudan yeni parola ata (bir kez gösterilir, sonra görülemez)
+  async function setNew() {
+    const pw = prompt(`${email} için yeni parola (en az 6 karakter):`);
+    if (!pw) return;
+    setBusy(true);
+    const res = await fetch("/api/admin/participants", {
+      method: "PATCH", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email, password: pw }),
+    });
+    setBusy(false);
+    if (!res.ok) alert((await res.json()).error);
+    else alert("Parola güncellendi. Bu parolayı kişiye iletin — sistemde bir daha görüntülenemez.");
+    router.refresh();
+  }
+
   return (
-    <Button variant="outline" size="sm"
-      onClick={async () => {
-        const pw = prompt(`${email} için yeni parola (en az 6 karakter):`);
-        if (!pw) return;
-        const res = await fetch("/api/admin/participants", {
-          method: "PATCH",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ email, password: pw }),
-        });
-        if (!res.ok) alert((await res.json()).error);
-        router.refresh();
-      }}>
-      Parola değiştir
-    </Button>
+    <span className="flex items-center gap-1">
+      <Button variant="outline" size="sm" disabled={busy} onClick={makeLink}>Sıfırlama bağlantısı</Button>
+      <Button variant="outline" size="sm" disabled={busy} onClick={setNew}>Parola ata</Button>
+    </span>
   );
 }
 

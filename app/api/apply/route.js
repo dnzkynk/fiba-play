@@ -2,7 +2,7 @@
 // Aynı e-postayla ikinci başvuru reddedilir (409).
 import { NextResponse } from "next/server";
 import { q } from "@/lib/db";
-import { encryptPassword } from "@/lib/crypto";
+import { hashPassword } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export async function POST(req) {
@@ -42,7 +42,7 @@ export async function POST(req) {
   try {
     await q(
       `INSERT INTO applications (full_name, email, phone, country, company, password) VALUES ($1,$2,$3,$4,$5,$6)`,
-      [fullName, email, phone, country, company, encryptPassword(password)]
+      [fullName, email, phone, country, company, hashPassword(password)]
     );
   } catch (err) {
     if (String(err.message).includes("applications_email_key"))

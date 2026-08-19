@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
-import { encryptPassword } from "@/lib/crypto";
+import { hashPassword } from "@/lib/crypto";
 
 export async function POST(req) {
   let me;
@@ -23,7 +23,7 @@ export async function POST(req) {
   try {
     const [a] = await q(
       "INSERT INTO admins (full_name, email, password) VALUES ($1, $2, $3) RETURNING id, full_name, email",
-      [b.fullName.trim(), email, encryptPassword(password)]
+      [b.fullName.trim(), email, hashPassword(password)]
     );
     await audit("admin_add", { email }, me.email);
     return NextResponse.json({ ...a, password }); // düz parola yalnız bu yanıtta gösterilir
