@@ -15,7 +15,7 @@ const nextConfig = {
           // Referrer sızıntısı
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           // Gereksiz tarayıcı yetkileri kapalı
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb()" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()" },
           // HTTPS zorunluluğu (alan adı bağlanınca etkili olur; HTTP'de tarayıcı yok sayar)
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
           // İçerik güvenlik politikası: kendi kaynaklarımız + Lichess'e yönlendirme.
