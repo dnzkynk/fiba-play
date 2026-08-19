@@ -17,6 +17,8 @@ export default async function ApplyPage() {
     company: t("applyCompany"),
     companyPh: t("applyCompanyPh"),
     password: t("password"),
+    passwordRepeat: t("passwordRepeat"),
+    passMismatch: t("resetMismatch"),
     passHint: t("applyPassHint"),
     passErr: t("applyPassErr"),
     submit: t("applySubmit"),

@@ -14,6 +14,7 @@ export function ApplyForm({ labels, lang }) {
   const [dialIso, setDialIso] = useState("TR");
   const [phoneNum, setPhoneNum] = useState("");
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [state, setState] = useState("idle"); // idle | busy | done
   const [error, setError] = useState("");
 
@@ -47,6 +48,7 @@ export function ApplyForm({ labels, lang }) {
     if (clean.fullName.length < 5 || !clean.fullName.includes(" ")) return setError(labels.nameErr);
     if (digits.length < 6 || digits.length > 13) return setError(labels.phoneErr);
     if (password.length < 6) return setError(labels.passErr);
+    if (password !== password2) return setError(labels.passMismatch);
     clean.phone = "+" + DIAL[dialIso] + " " + phoneNum.trim();
     clean.password = password;
     setState("busy");
@@ -112,12 +114,20 @@ export function ApplyForm({ labels, lang }) {
             autoComplete="organization" placeholder={labels.companyPh} />
         </div>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="bpw">{labels.password} <span className="text-red-500">*</span></Label>
-        <Input id="bpw" type="password" value={password} required minLength={6} maxLength={40}
-          onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" placeholder="••••••" />
-        <span className="text-xs text-stone-400">{labels.passHint}</span>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="bpw">{labels.password} <span className="text-red-500">*</span></Label>
+          <Input id="bpw" type="password" value={password} required minLength={6} maxLength={40}
+            onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" placeholder="••••••••" />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="bpw2">{labels.passwordRepeat} <span className="text-red-500">*</span></Label>
+          <Input id="bpw2" type="password" value={password2} required minLength={6} maxLength={40}
+            onChange={(e) => setPassword2(e.target.value)} autoComplete="new-password" placeholder="••••••••"
+            className={password2 && password !== password2 ? "border-red-300" : undefined} />
+        </div>
       </div>
+      <span className="-mt-2 text-xs text-stone-400">{labels.passHint}</span>
       {error && (
         <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       )}

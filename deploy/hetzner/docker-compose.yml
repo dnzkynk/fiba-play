@@ -20,6 +20,8 @@ services:
     build:
       context: ../..
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_TAWK_SRC: ${NEXT_PUBLIC_TAWK_SRC:-}
     restart: unless-stopped
     depends_on:
       db:

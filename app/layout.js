@@ -3,6 +3,7 @@ import { currentAdmin, currentPlayerRows } from "@/lib/auth";
 import { getT } from "@/lib/i18n";
 import { UserMenu, LangSwitcher, NavLink } from "./nav";
 import { brandLogoPath } from "@/lib/brand";
+import { LiveChat } from "./tawk";
 
 export const metadata = {
   title: "Fiba Games 2026 — Chess",
@@ -58,6 +59,7 @@ export default async function RootLayout({ children }) {
             <span>Fiba Group © 2026</span>
           </div>
         </footer>
+        <LiveChat />
       </body>
     </html>
   );
