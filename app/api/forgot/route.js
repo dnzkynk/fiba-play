@@ -6,7 +6,6 @@ import { makeResetToken } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 import { sendMail, mailEnabled } from "@/lib/mail";
 import { resetMail } from "@/lib/mailtemplates";
-import { getLang } from "@/lib/i18n";
 
 const TTL_MIN = 60;
 
@@ -27,8 +26,7 @@ export async function POST(req) {
     );
     const url = `${process.env.BASE_URL ?? ""}/reset?token=${raw}`;
     if (mailEnabled) {
-      const lang = await getLang();
-      const { subject, html } = resetMail(url, lang);
+      const { subject, html } = resetMail(url);
       const r = await sendMail({ to: mail, subject, html });
       await audit("password_reset_requested", { email: mail, mail: r.sent }, "oyuncu");
     } else {
