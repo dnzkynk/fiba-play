@@ -3,7 +3,8 @@ import { requireAdmin } from "@/lib/auth";
 import { getSettings, setSetting } from "@/lib/settings";
 import { audit } from "@/lib/db";
 
-const ALLOWED = ["chess_clock_limit", "chess_clock_increment", "tavla_points", "no_show_minutes"];
+const ALLOWED = ["chess_clock_limit", "chess_clock_increment", "tavla_points", "no_show_minutes",
+  "notify_schedule", "notify_live"];
 
 export async function POST(req) {
   let admin;

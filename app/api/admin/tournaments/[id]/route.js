@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 import { q, audit } from "@/lib/db";
 import { swapSeats, scheduleTournament, replaceSeat, assignPlayer, unassignPlayer, drawTournament } from "@/lib/engine";
+import { notifyScheduled } from "@/lib/notify";
 
 export async function PATCH(req, { params }) {
   let admin;
@@ -25,6 +26,7 @@ export async function PATCH(req, { params }) {
         body.intervalHours,
         admin.email
       );
+      if (body.notify !== false) notifyScheduled(parseInt(id, 10)).catch(() => {});
       return NextResponse.json(result);
     }
     if (body.action === "rename") {
@@ -48,6 +50,7 @@ export async function PATCH(req, { params }) {
     }
     if (body.action === "draw") {
       const result = await drawTournament(parseInt(id, 10), admin.email);
+      notifyScheduled(parseInt(id, 10)).catch(() => {});
       return NextResponse.json(result);
     }
     return NextResponse.json({ error: "Bilinmeyen işlem" }, { status: 400 });
