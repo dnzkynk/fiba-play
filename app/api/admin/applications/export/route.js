@@ -1,6 +1,7 @@
 // Başvuru listesi CSV (İK/organizasyonla paylaşmak için)
 import { requireAdmin } from "@/lib/auth";
 import { q } from "@/lib/db";
+import { countryName } from "@/lib/countries";
 
 const STATUS_TR = { new: "Bekliyor", approved: "Asil", reserve: "Yedek" };
 
@@ -13,9 +14,9 @@ export async function GET() {
   const rows = await q("SELECT * FROM applications ORDER BY created_at");
   const esc = (v) => `"${String(v ?? "").replaceAll('"', '""')}"`;
   const lines = [
-    ["Ad Soyad", "E-posta", "Telefon", "Ülke", "Şirket", "Durum", "Başvuru tarihi"].map(esc).join(";"),
+    ["Ad Soyad", "E-posta", "Ülke", "Şirket", "Durum", "Başvuru tarihi"].map(esc).join(";"),
     ...rows.map((r) =>
-      [r.full_name, r.email, r.phone, r.country, r.company, STATUS_TR[r.status] ?? r.status,
+      [r.full_name, r.email, countryName(r.country), r.company, STATUS_TR[r.status] ?? r.status,
        new Date(r.created_at).toISOString().slice(0, 16).replace("T", " ") + " UTC"].map(esc).join(";")
     ),
   ];

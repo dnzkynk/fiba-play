@@ -10,8 +10,6 @@ export default async function ApplyPage() {
     fullName: t("applyFullName"),
     namePh: t("applyNamePh"),
     email: t("email"),
-    phone: t("applyPhone"),
-    phonePh: t("applyPhonePh"),
     country: t("applyCountry"),
     countryPh: t("applyCountryPh"),
     company: t("applyCompany"),
@@ -26,11 +24,9 @@ export default async function ApplyPage() {
     done: t("applyDone"),
     doneSub: t("applyDoneSub"),
     dupe: t("applyDupe"),
-    dupePhone: t("applyDupePhone"),
     rate: t("applyRate"),
     err: t("applyErr"),
     nameErr: t("applyNameErr"),
-    phoneErr: t("applyPhoneErr"),
   };
 
   return (

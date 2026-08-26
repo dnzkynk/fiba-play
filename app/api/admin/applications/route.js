@@ -38,9 +38,9 @@ export async function POST(req) {
   if (!participant) {
     const password = a.password ?? hashPassword(generatePassword());
     [participant] = await q(
-      `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password, is_reserve)
-       VALUES ($1,$2,$3,'chess',64,$4,$5,$6) RETURNING *`,
-      [a.full_name, a.email, a.company, crypto.randomBytes(16).toString("hex"), password, isReserve]
+      `INSERT INTO participants (full_name, email, company, country, game, bracket_size, token, password, is_reserve)
+       VALUES ($1,$2,$3,$4,'chess',64,$5,$6,$7) RETURNING *`,
+      [a.full_name, a.email, a.company, a.country, crypto.randomBytes(16).toString("hex"), password, isReserve]
     );
   }
 

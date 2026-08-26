@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { buttonVariants } from "@/components/ui/button";
 import { LocalTime } from "@/app/timefmt";
+import { flagOf, countryName } from "@/lib/countries";
 import { ApplicationActions } from "./ui";
 
 export const dynamic = "force-dynamic";
@@ -48,15 +49,14 @@ export default async function ApplicationsPage() {
         ) : (
           <Table>
             <THead>
-              <TR><TH>Ad Soyad</TH><TH>E-posta</TH><TH>Telefon</TH><TH>Ülke</TH><TH>Şirket</TH><TH>Parola</TH><TH>Tarih</TH><TH>Durum</TH><TH></TH></TR>
+              <TR><TH>Ad Soyad</TH><TH>E-posta</TH><TH>Ülke</TH><TH>Şirket</TH><TH>Parola</TH><TH>Tarih</TH><TH>Durum</TH><TH></TH></TR>
             </THead>
             <TBody>
               {rows.map((r) => (
                 <TR key={r.id}>
                   <TD className="font-medium">{r.full_name}</TD>
                   <TD className="text-stone-500">{r.email}</TD>
-                  <TD className="text-stone-500">{r.phone}</TD>
-                  <TD>{r.country}</TD>
+                  <TD>{flagOf(r.country)} {countryName(r.country)}</TD>
                   <TD>{r.company}</TD>
                   <TD>{r.password
                     ? <span className="text-xs text-emerald-700">kendi belirledi</span>

@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS participants (
   full_name    TEXT NOT NULL,
   email        TEXT NOT NULL,
   company      TEXT,                          -- iştirak/şirket
+  country      TEXT,                          -- ISO 3166-1 alpha-2 (fikstürde bayrak için)
   game         TEXT NOT NULL CHECK (game IN ('chess', 'tavla')),
   bracket_size INT  NOT NULL CHECK (bracket_size IN (8, 16, 32, 64)),
   token        TEXT NOT NULL UNIQUE,          -- iç kullanım (join yönlendirmesi imzası)
@@ -72,8 +73,8 @@ CREATE TABLE IF NOT EXISTS applications (
   id         SERIAL PRIMARY KEY,
   full_name  TEXT NOT NULL,
   email      TEXT NOT NULL UNIQUE,
-  phone      TEXT NOT NULL,
-  country    TEXT NOT NULL,
+  phone      TEXT,                            -- artık istenmiyor; geçmiş kayıtlar için sütun korunuyor
+  country    TEXT NOT NULL,                    -- ISO 3166-1 alpha-2
   company    TEXT NOT NULL,
   password   TEXT,                          -- başvuranın kendi seçtiği giriş parolası (admin görür/değiştirir)
   status     TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'approved', 'reserve')),

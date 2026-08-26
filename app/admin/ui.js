@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input, Select, Textarea, Label } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TAVLA_ENABLED } from "@/lib/features";
+import { COUNTRY_CODES, flagOf } from "@/lib/countries";
 
 export function AdminLoginForm() {
   const [email, setEmail] = useState("");
@@ -57,7 +58,7 @@ export function AdminLoginForm() {
 }
 
 export function AddParticipantForm() {
-  const [f, setF] = useState({ fullName: "", email: "", company: "", size: "16" });
+  const [f, setF] = useState({ fullName: "", email: "", company: "", country: "", size: "16" });
   const [games, setGames] = useState({ chess: true, tavla: false });
   const [isReserve, setIsReserve] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -95,6 +96,13 @@ export function AddParticipantForm() {
         <div className="flex flex-col gap-1.5">
           <Label>Şirket</Label>
           <Input className="w-36" value={f.company} onChange={set("company")} placeholder="Şirket" />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label>Ülke</Label>
+          <Select className="w-32" value={f.country} onChange={set("country")}>
+            <option value="">—</option>
+            {COUNTRY_CODES.map((c) => <option key={c} value={c}>{flagOf(c)} {c}</option>)}
+          </Select>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label>Oyunlar</Label>
@@ -173,7 +181,7 @@ export function ImportForm() {
   return (
     <form onSubmit={submit} className="rounded-lg border border-stone-200 bg-stone-50 p-4">
       <p className="mb-2 text-xs text-stone-500">
-        Kolonlar: <code className="rounded bg-white px-1 py-0.5">ad_soyad, email, sirket, oyun({TAVLA_ENABLED ? "satranc/tavla" : "satranc"}), turnuva_boyu(8/16/32/64)</code>{" "}
+        Kolonlar: <code className="rounded bg-white px-1 py-0.5">ad_soyad, email, sirket, oyun({TAVLA_ENABLED ? "satranc/tavla" : "satranc"}), turnuva_boyu(8/16/32/64), durum(opsiyonel: yedek), ulke(opsiyonel: TR gibi ISO kod)</code>{" "}
         — Excel'den CSV olarak dışa aktarıp yükleyin veya yapıştırın. Parolalar otomatik üretilir.
       </p>
       <input type="file" accept=".csv,.txt" className="mb-2 block text-sm"

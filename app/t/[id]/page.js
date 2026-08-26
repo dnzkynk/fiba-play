@@ -7,6 +7,7 @@ import { tournamentWithMatches } from "@/lib/queries";
 import { getT, roundLabel, tournamentTitle } from "@/lib/i18n";
 import { Badge, STATUS_VARIANT } from "@/components/ui/badge";
 import { AutoRefresh } from "@/app/refresh";
+import { flagOf } from "@/lib/countries";
 
 export const dynamic = "force-dynamic";
 
@@ -36,12 +37,15 @@ export default async function TournamentPage({ params }) {
     [tid, t.rounds.length]
   );
 
-  function PlayerRow({ name, isWinner, decided }) {
+  function PlayerRow({ name, country, isWinner, decided }) {
     return (
       <div className={`flex items-center justify-between px-3.5 py-2.5 text-sm ${
         !decided ? "" : isWinner ? "bg-emerald-50 font-semibold text-emerald-800" : "text-stone-400"
       }`}>
-        <span className="truncate">{name ?? "—"}</span>
+        <span className="truncate">
+          {country && <span className="mr-1.5">{flagOf(country)}</span>}
+          {name ?? "—"}
+        </span>
         {isWinner && <span className="text-emerald-600">✓</span>}
       </div>
     );
@@ -70,9 +74,9 @@ export default async function TournamentPage({ params }) {
                 className={`overflow-hidden rounded-lg border bg-white shadow-sm ${
                   m.status === "live" ? "border-amber-400 ring-1 ring-amber-400" : "border-stone-200"
                 }`}>
-                <PlayerRow name={m.p1_name} isWinner={m.winner_id === m.p1_id} decided={!!m.winner_id} />
+                <PlayerRow name={m.p1_name} country={m.p1_country} isWinner={m.winner_id === m.p1_id} decided={!!m.winner_id} />
                 <div className="border-t border-stone-100" />
-                <PlayerRow name={m.p2_name} isWinner={m.winner_id === m.p2_id} decided={!!m.winner_id} />
+                <PlayerRow name={m.p2_name} country={m.p2_country} isWinner={m.winner_id === m.p2_id} decided={!!m.winner_id} />
                 <div className="flex flex-wrap items-center gap-2 border-t border-stone-100 bg-stone-50 px-3 py-1.5 text-[11px] text-stone-500">
                   <Badge variant={STATUS_VARIANT[m.status]} className="text-[10px]">{tr(`st_${m.status}`)}</Badge>
                   {m.status === "live" && m.game_url && t.game === "chess" && m.p1_joined_at && m.p2_joined_at && (

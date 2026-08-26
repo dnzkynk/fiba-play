@@ -6,6 +6,7 @@ import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
 import { hashPassword } from "@/lib/crypto";
 import { TAVLA_ENABLED } from "@/lib/features";
+import { COUNTRY_CODES } from "@/lib/countries";
 
 // Katılımcı listesi (otomasyon/yedekleme için)
 export async function GET() {
@@ -45,6 +46,9 @@ export async function POST(req) {
   if (![8, 16, 32, 64].includes(size))
     return NextResponse.json({ error: "Turnuva boyu 8/16/32/64 olmalı" }, { status: 400 });
 
+  const country = COUNTRY_CODES.includes(String(b.country ?? "").toUpperCase())
+    ? String(b.country).toUpperCase() : null;
+
   const [existing] = await q(
     "SELECT password FROM participants WHERE email = $1 AND password IS NOT NULL LIMIT 1",
     [email]
@@ -73,9 +77,9 @@ export async function POST(req) {
     const created = [];
     for (const game of games) {
       const [p] = await q(
-        `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password, is_reserve)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-        [b.fullName.trim(), email, b.company?.trim() || null, game, size,
+        `INSERT INTO participants (full_name, email, company, country, game, bracket_size, token, password, is_reserve)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+        [b.fullName.trim(), email, b.company?.trim() || null, country, game, size,
          crypto.randomBytes(16).toString("hex"), storedPassword, !!b.isReserve]
       );
       created.push(p);

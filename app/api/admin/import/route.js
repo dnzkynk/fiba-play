@@ -7,6 +7,7 @@ import { q, audit } from "@/lib/db";
 import { requireAdmin, generatePassword } from "@/lib/auth";
 import { hashPassword } from "@/lib/crypto";
 import { TAVLA_ENABLED } from "@/lib/features";
+import { COUNTRY_CODES } from "@/lib/countries";
 
 function parseCsv(text) {
   const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
@@ -21,8 +22,9 @@ function parseCsv(text) {
     const cols = line.split(/[;,]/).map((c) => c.trim());
     const lineNo = i + (hasHeader ? 2 : 1);
     if (cols.length < 5) return errors.push(`Satır ${lineNo}: eksik kolon (5 gerekli)`);
-    const [fullName, email, company, gameRaw, sizeRaw, reserveRaw] = cols;
+    const [fullName, email, company, gameRaw, sizeRaw, reserveRaw, countryRaw] = cols;
     const isReserve = /yedek|reserve/i.test(reserveRaw ?? "");
+    const country = COUNTRY_CODES.includes((countryRaw ?? "").toUpperCase()) ? countryRaw.toUpperCase() : null;
     const game = /tavla/i.test(gameRaw) ? (TAVLA_ENABLED ? "tavla" : "kapali") : /satran|chess/i.test(gameRaw) ? "chess" : null;
     if (game === "kapali") return errors.push(`Satır ${lineNo}: tavla kayıtları kapalı — yalnızca satranç`);
     const size = parseInt(sizeRaw, 10);
@@ -31,7 +33,7 @@ function parseCsv(text) {
     if (!game) errors.push(`Satır ${lineNo}: oyun 'satranc' veya 'tavla' olmalı (${gameRaw})`);
     if (![8, 16, 32, 64].includes(size)) errors.push(`Satır ${lineNo}: turnuva boyu 8/16/32/64 olmalı (${sizeRaw})`);
     if (fullName && game && [8, 16, 32, 64].includes(size)) {
-      rows.push({ fullName, email: email.toLowerCase(), company, game, size, isReserve });
+      rows.push({ fullName, email: email.toLowerCase(), company, game, size, isReserve, country });
     }
   });
   return { rows, errors };
@@ -64,15 +66,16 @@ export async function POST(req) {
     );
     if (waiting) {
       await q(
-        `UPDATE participants SET full_name = $1, company = $2, bracket_size = $3, is_reserve = $4 WHERE id = $5`,
-        [r.fullName, r.company || null, r.size, r.isReserve, waiting.id]
+        `UPDATE participants SET full_name = $1, company = $2, bracket_size = $3, is_reserve = $4,
+           country = COALESCE($5, country) WHERE id = $6`,
+        [r.fullName, r.company || null, r.size, r.isReserve, r.country, waiting.id]
       );
       updated++;
     } else {
       await q(
-        `INSERT INTO participants (full_name, email, company, game, bracket_size, token, password, is_reserve)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-        [r.fullName, r.email, r.company || null, r.game, r.size,
+        `INSERT INTO participants (full_name, email, company, country, game, bracket_size, token, password, is_reserve)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+        [r.fullName, r.email, r.company || null, r.country, r.game, r.size,
          crypto.randomBytes(16).toString("hex"), existing?.password ?? hashPassword(generatePassword()), r.isReserve]
       );
       inserted++;
