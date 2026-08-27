@@ -32,6 +32,8 @@ export default async function ApplyPage() {
     noticeAnd: t("applyNoticeAnd"),
     noticeCookie: t("applyNoticeCookie"),
     noticeErr: t("applyNoticeErr"),
+    noticeOpenErr: t("applyNoticeOpenErr"),
+    noticeOpenHint: t("applyNoticeOpenHint"),
   };
 
   return (
