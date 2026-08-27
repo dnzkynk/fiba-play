@@ -34,6 +34,10 @@ export default async function RootLayout({ children }) {
             </a>
 
             <nav className="ml-auto flex items-center gap-1">
+              <a href="/legal/fiba-game-rules.pdf" target="_blank" rel="noreferrer"
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-stone-500 no-underline transition-colors hover:bg-stone-50 hover:text-stone-900">
+                {t("rules")}
+              </a>
               {player && <NavLink href="/me">{t("myMatches")}</NavLink>}
               {admin && <NavLink href="/admin">{t("admin")}</NavLink>}
               {!player && !admin && <NavLink href="/login">{t("login")}</NavLink>}

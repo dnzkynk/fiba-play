@@ -1,12 +1,15 @@
 // Public başvuru: ad soyad, e-posta, ülke, şirket. Telefon artık istenmiyor.
 // Aynı e-postayla ikinci başvuru reddedilir (409).
 import { NextResponse } from "next/server";
+import path from "node:path";
 import { q } from "@/lib/db";
 import { hashPassword } from "@/lib/crypto";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 import { sendMail } from "@/lib/mail";
 import { applyReceivedMail } from "@/lib/mailtemplates";
 import { COUNTRY_CODES } from "@/lib/countries";
+
+const rulesPdfPath = path.join(process.cwd(), "public/legal/fiba-game-rules.pdf");
 
 export async function POST(req) {
   // Kötü niyetli toplu başvuruya karşı: IP başına dakikada 5
@@ -48,6 +51,9 @@ export async function POST(req) {
     throw err;
   }
   const { subject, html } = applyReceivedMail(fullName.split(" ")[0]);
-  await sendMail({ to: email, subject, html }); // SMTP yoksa sessizce atlanır
+  await sendMail({
+    to: email, subject, html,
+    attachments: [{ filename: "Fiba Games - Rules.pdf", path: rulesPdfPath }],
+  }); // SMTP yoksa sessizce atlanır
   return NextResponse.json({ ok: true });
 }
