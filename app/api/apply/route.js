@@ -23,6 +23,11 @@ export async function POST(req) {
 
   if (!fullName || !country || !company)
     return NextResponse.json({ error: "eksik" }, { status: 400 });
+  // Aydınlatma metinlerinin okunduğuna dair işaretleme zorunlu (JS kapalıysa bile atlanamaz).
+  // Not: KVKK aydınlatma yükümlülüğü için ayrıca bir "rıza" kaydı tutulmuyor —
+  // metinlerin erişilebilir olması ve işaretlenip devam edilebilmesi yeterli.
+  if (b.noticeAck !== "1")
+    return NextResponse.json({ error: "notice" }, { status: 400 });
   if (fullName.length < 5 || !fullName.includes(" "))
     return NextResponse.json({ error: "name" }, { status: 400 });
   if (!COUNTRY_CODES.includes(country))

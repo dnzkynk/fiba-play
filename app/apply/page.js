@@ -27,6 +27,11 @@ export default async function ApplyPage() {
     rate: t("applyRate"),
     err: t("applyErr"),
     nameErr: t("applyNameErr"),
+    noticePre: t("applyNoticePre"),
+    noticeParticipant: t("applyNoticeParticipant"),
+    noticeAnd: t("applyNoticeAnd"),
+    noticeCookie: t("applyNoticeCookie"),
+    noticeErr: t("applyNoticeErr"),
   };
 
   return (

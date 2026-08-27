@@ -8,6 +8,7 @@ export function ApplyForm({ labels, lang }) {
   const [f, setF] = useState({ fullName: "", email: "", country: "", company: "" });
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const [notice, setNotice] = useState(false);
   const [state, setState] = useState("idle"); // idle | busy | done
   const [error, setError] = useState("");
 
@@ -32,7 +33,9 @@ export function ApplyForm({ labels, lang }) {
     if (clean.fullName.length < 5 || !clean.fullName.includes(" ")) return setError(labels.nameErr);
     if (password.length < 6) return setError(labels.passErr);
     if (password !== password2) return setError(labels.passMismatch);
+    if (!notice) return setError(labels.noticeErr);
     clean.password = password;
+    clean.noticeAck = "1";
     setState("busy");
     const res = await fetch("/api/apply", {
       method: "POST",
@@ -98,6 +101,18 @@ export function ApplyForm({ labels, lang }) {
         </div>
       </div>
       <span className="-mt-2 text-xs text-stone-400">{labels.passHint}</span>
+      <label className="flex items-start gap-2.5 text-sm text-stone-700">
+        <input type="checkbox" className="mt-0.5 accent-fiba-600" checked={notice}
+          onChange={(e) => setNotice(e.target.checked)} />
+        <span>
+          {labels.noticePre}{" "}
+          <a href="/legal/participant-privacy-notice.pdf" target="_blank" rel="noreferrer"
+            className="font-medium text-fiba-700 hover:underline">{labels.noticeParticipant}</a>
+          {" "}{labels.noticeAnd}{" "}
+          <a href="/legal/cookie-privacy-notice.pdf" target="_blank" rel="noreferrer"
+            className="font-medium text-fiba-700 hover:underline">{labels.noticeCookie}</a>.
+        </span>
+      </label>
       {error && (
         <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       )}

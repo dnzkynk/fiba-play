@@ -56,7 +56,15 @@ export default async function RootLayout({ children }) {
         <footer className="border-t border-stone-200 bg-white">
           <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-5 text-xs text-stone-400 sm:px-8">
             <span>♟ {brand} · {t("footerNote")}</span>
-            <span>Fiba Group © 2026</span>
+            <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <a href="/legal/participant-privacy-notice.pdf" target="_blank" rel="noreferrer" className="hover:text-fiba-700 hover:underline">
+                {t("applyNoticeParticipant")}
+              </a>
+              <a href="/legal/cookie-privacy-notice.pdf" target="_blank" rel="noreferrer" className="hover:text-fiba-700 hover:underline">
+                {t("applyNoticeCookie")}
+              </a>
+              <span>Fiba Group © 2026</span>
+            </span>
           </div>
         </footer>
         <LiveChat />
