@@ -28,6 +28,7 @@ export default async function ApplyPage() {
     rate: t("applyRate"),
     err: t("applyErr"),
     nameErr: t("applyNameErr"),
+    resultsDate: t("applyResultsDate"),
     noticePre: t("applyNoticePre"),
     noticeParticipant: t("applyNoticeParticipant"),
     noticeAnd: t("applyNoticeAnd"),
@@ -45,7 +46,10 @@ export default async function ApplyPage() {
           <img src="/ust-banner.png" alt="Fiba Games" className="w-full" />
           <div className="p-8 sm:p-10">
             <h1 className="text-2xl font-semibold tracking-tight">{t("applyTitle")}</h1>
-            <p className="mt-1.5 mb-8 text-sm leading-relaxed text-stone-500">{t("applySub")}</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-stone-500">{t("applySub")}</p>
+            <p className="mt-3 mb-8 rounded-lg border border-fiba-100 bg-fiba-50 px-3.5 py-2.5 text-sm font-medium text-fiba-700">
+              {t("applyResultsDate")}
+            </p>
             <ApplyForm labels={labels} lang={lang} />
           </div>
         </div>
