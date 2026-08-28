@@ -44,7 +44,6 @@ export function PlayerLoginForm({ labels }) {
       <Button type="submit" disabled={busy} className="w-full">
         {busy ? labels.loggingIn : labels.loginBtn}
       </Button>
-      <p className="text-xs leading-relaxed text-stone-500">{labels.noPassword}</p>
     </form>
   );
 }

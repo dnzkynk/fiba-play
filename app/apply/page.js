@@ -10,6 +10,7 @@ export default async function ApplyPage() {
     fullName: t("applyFullName"),
     namePh: t("applyNamePh"),
     email: t("email"),
+    emailHint: t("applyEmailHint"),
     country: t("applyCountry"),
     countryPh: t("applyCountryPh"),
     company: t("applyCompany"),

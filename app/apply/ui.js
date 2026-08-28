@@ -113,6 +113,7 @@ export function ApplyForm({ labels, lang }) {
           <Label htmlFor="be">{labels.email} <span className="text-red-500">*</span></Label>
           <Input id="be" type="email" value={f.email} onChange={set("email")} required
             autoComplete="email" placeholder="name.surname@company.com" />
+          <span className="text-xs text-stone-400">{labels.emailHint}</span>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="bc">{labels.country} <span className="text-red-500">*</span></Label>

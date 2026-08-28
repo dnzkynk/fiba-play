@@ -17,7 +17,6 @@ export default async function LoginPage() {
     loginBtn: t("loginBtn"),
     loggingIn: t("loggingIn"),
     loginFailed: t("loginFailed"),
-    noPassword: t("noPassword"),
   };
   const bullets = [t("heroBullet1"), t("heroBullet2"), t("heroBullet3")];
 
