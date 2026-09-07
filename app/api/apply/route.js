@@ -8,6 +8,7 @@ import { rateLimit, clientIp } from "@/lib/ratelimit";
 import { sendMail } from "@/lib/mail";
 import { applyReceivedMail } from "@/lib/mailtemplates";
 import { COUNTRY_CODES } from "@/lib/countries";
+import { getSettings } from "@/lib/settings";
 
 const rulesPdfPath = path.join(process.cwd(), "public/legal/fiba-game-rules.pdf");
 
@@ -16,6 +17,10 @@ export async function POST(req) {
   if (!rateLimit(`apply:${clientIp(req)}`, { max: 5, windowMs: 60_000 })) {
     return NextResponse.json({ error: "rate" }, { status: 429 });
   }
+  // Başvurular kapalıyken form gizlemek yetmez — sunucu tarafında da reddedilir.
+  const settings = await getSettings();
+  if ((settings.applications_open ?? "1") !== "1")
+    return NextResponse.json({ error: "closed" }, { status: 403 });
   const b = await req.json().catch(() => ({}));
   const clean = (v, max) => String(v ?? "").trim().slice(0, max);
   const fullName = clean(b.fullName, 100);

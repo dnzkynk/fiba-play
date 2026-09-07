@@ -353,6 +353,7 @@ export function SettingsForm({ initial }) {
   const [noShow, setNoShow] = useState(initial.no_show_minutes ?? "10");
   const [nSched, setNSched] = useState((initial.notify_schedule ?? "1") === "1");
   const [nLive, setNLive] = useState((initial.notify_live ?? "1") === "1");
+  const [applyOpen, setApplyOpen] = useState((initial.applications_open ?? "1") === "1");
   const [msg, setMsg] = useState(null);
 
   async function save(e) {
@@ -361,7 +362,8 @@ export function SettingsForm({ initial }) {
     const res = await fetch("/api/admin/settings", {
       method: "POST",
       body: JSON.stringify({ chess_clock_limit: limit, chess_clock_increment: inc, tavla_points: tavlaPoints,
-        no_show_minutes: noShow, notify_schedule: nSched ? 1 : 0, notify_live: nLive ? 1 : 0 }),
+        no_show_minutes: noShow, notify_schedule: nSched ? 1 : 0, notify_live: nLive ? 1 : 0,
+        applications_open: applyOpen ? 1 : 0 }),
     });
     setMsg(res.ok ? { ok: true, text: "Kaydedildi ✓" } : { ok: false, text: (await res.json()).error });
   }
@@ -413,6 +415,13 @@ export function SettingsForm({ initial }) {
           Maç başladığında "hemen katıl" bildirimi gönder
         </label>
         <span className="text-xs text-stone-400">E-posta ayarı (SMTP) tanımlı değilse bu bildirimler gönderilmez.</span>
+      </div>
+      <div className="flex w-full flex-col gap-2 border-t border-stone-100 pt-4">
+        <Label>📝 Başvurular</Label>
+        <label className="flex cursor-pointer items-center gap-2 text-sm font-normal text-stone-700">
+          <input type="checkbox" className="accent-fiba-600" checked={applyOpen} onChange={(e) => setApplyOpen(e.target.checked)} />
+          Başvuru ekranı açık (kapatınca /apply adresinde form yerine "başvurular kapandı" yazar)
+        </label>
       </div>
       <Button type="submit">Kaydet</Button>
       {msg && <span className={`pb-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}

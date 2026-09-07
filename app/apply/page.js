@@ -1,11 +1,34 @@
 // Public başvuru sayfası: giriş gerektirmez.
+// Başvurular "applications_open" ayarıyla panelden açılıp kapatılır.
 import { getT } from "@/lib/i18n";
+import { getSettings } from "@/lib/settings";
 import { ApplyForm } from "./ui";
 
 export const dynamic = "force-dynamic";
 
 export default async function ApplyPage() {
   const { t, lang } = await getT();
+  const settings = await getSettings();
+  if ((settings.applications_open ?? "1") !== "1") {
+    return (
+      <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center py-4">
+        <div className="w-full max-w-2xl">
+          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-xl">
+            <img src="/ust-banner.png" alt="Fiba Games" className="w-full" />
+            <div className="p-8 text-center sm:p-10">
+              <h1 className="text-2xl font-semibold tracking-tight">{t("applyClosedTitle")}</h1>
+              <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-stone-500">
+                {t("applyClosedSub")}
+              </p>
+              <p className="mt-6 text-sm">
+                <a className="font-medium text-fiba-700 hover:underline" href="/login">{t("applyClosedLogin")}</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const labels = {
     fullName: t("applyFullName"),
     namePh: t("applyNamePh"),
