@@ -6,6 +6,7 @@ import { Input, Select, Textarea, Label } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TAVLA_ENABLED } from "@/lib/features";
 import { COUNTRY_CODES, flagOf } from "@/lib/countries";
+import { toGmtInput, fromGmtInput } from "@/app/timefmt";
 
 export function AdminLoginForm() {
   const [email, setEmail] = useState("");
@@ -228,7 +229,7 @@ export function NewTournamentForm() {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         name, bracketSize: parseInt(size, 10),
-        roundTimes: filled.length ? times.slice(0, rounds).map((t) => new Date(t).toISOString()) : null,
+        roundTimes: filled.length ? times.slice(0, rounds).map(fromGmtInput) : null,
       }),
     });
     const data = await res.json();
@@ -254,7 +255,7 @@ export function NewTournamentForm() {
         </div>
       </div>
       <p className="mt-4 mb-1.5 text-xs font-medium text-stone-500">
-        Tur saatleri (Türkiye saati) — opsiyonel, boş bırakırsanız kuradan sonra da girebilirsiniz:
+        Tur saatleri (GMT — Türkiye saatinden 3 saat geride) — opsiyonel, boş bırakırsanız kuradan sonra da girebilirsiniz:
       </p>
       <div className="flex flex-wrap items-end gap-3">
         {Array.from({ length: rounds }, (_, i) => (
@@ -420,20 +421,14 @@ export function SettingsForm({ initial }) {
 }
 
 export function TournamentScheduleForm({ tournamentId, rounds, roundTimes, startsAt, intervalHours }) {
-  const toLocal = (iso) => {
-    if (!iso) return "";
-    const d = new Date(iso);
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  };
   const roundLabel = (i) => {
     const kalan = rounds - i;
     return kalan === 1 ? "Final" : kalan === 2 ? "Yarı final" : kalan === 3 ? "Çeyrek final" : `${i + 1}. Tur`;
   };
   const [times, setTimes] = useState(() =>
     Array.from({ length: rounds }, (_, i) => {
-      if (roundTimes?.[i]) return toLocal(roundTimes[i]);
-      if (startsAt) return toLocal(new Date(new Date(startsAt).getTime() + i * (intervalHours ?? 24) * 3600_000).toISOString());
+      if (roundTimes?.[i]) return toGmtInput(roundTimes[i]);
+      if (startsAt) return toGmtInput(new Date(new Date(startsAt).getTime() + i * (intervalHours ?? 24) * 3600_000).toISOString());
       return "";
     })
   );
@@ -446,7 +441,7 @@ export function TournamentScheduleForm({ tournamentId, rounds, roundTimes, start
       method: "PATCH",
       body: JSON.stringify({
         action: "schedule",
-        roundTimes: times.map((t) => new Date(t).toISOString()),
+        roundTimes: times.map(fromGmtInput),
       }),
     });
     const data = await res.json();
@@ -457,16 +452,21 @@ export function TournamentScheduleForm({ tournamentId, rounds, roundTimes, start
   }
 
   return (
-    <div className="flex flex-wrap items-end gap-3">
-      {times.map((v, i) => (
-        <div key={i} className="flex flex-col gap-1.5">
-          <Label>{roundLabel(i)}</Label>
-          <Input type="datetime-local" className="w-auto" value={v}
-            onChange={(e) => setTimes(times.map((t, j) => (j === i ? e.target.value : t)))} />
-        </div>
-      ))}
-      <Button disabled={times.some((t) => !t)} onClick={apply}>Programı uygula</Button>
-      {msg && <span className={`pb-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
+    <div>
+      <p className="mb-1.5 text-xs font-medium text-stone-500">
+        Saatler GMT olarak girilir (Türkiye saatinden 3 saat geride).
+      </p>
+      <div className="flex flex-wrap items-end gap-3">
+        {times.map((v, i) => (
+          <div key={i} className="flex flex-col gap-1.5">
+            <Label>{roundLabel(i)}</Label>
+            <Input type="datetime-local" className="w-auto" value={v}
+              onChange={(e) => setTimes(times.map((t, j) => (j === i ? e.target.value : t)))} />
+          </div>
+        ))}
+        <Button disabled={times.some((t) => !t)} onClick={apply}>Programı uygula</Button>
+        {msg && <span className={`pb-2 text-sm ${msg.ok ? "text-emerald-700" : "text-red-600"}`}>{msg.text}</span>}
+      </div>
     </div>
   );
 }
@@ -541,11 +541,11 @@ export function MatchControls({ match }) {
       {(m.status === "pending" || m.status === "scheduled") && m.p1_id && m.p2_id && (
         <>
           <div className="flex flex-col gap-1">
-            <Label>Maç saati</Label>
+            <Label>Maç saati (GMT)</Label>
             <Input type="datetime-local" className="w-auto" value={at} onChange={(e) => setAt(e.target.value)} />
           </div>
           <Button variant="outline" size="sm" disabled={!at}
-            onClick={() => patchMatch(m.id, { action: "schedule", at: new Date(at).toISOString() }).then(done)}>
+            onClick={() => patchMatch(m.id, { action: "schedule", at: fromGmtInput(at) }).then(done)}>
             Randevu ver
           </Button>
           <Button size="sm" onClick={() => patchMatch(m.id, { action: "start" }).then(done)}>

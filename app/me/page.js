@@ -1,6 +1,6 @@
 // Oyuncu ekranı: karşılama bandı + geniş iki kolonlu düzen
 // (sol: aktif maçlar + geçmiş, sağ: turnuvalarım / derece / izleme)
-import { LocalTime } from "@/app/timefmt";
+import { GmtTime } from "@/app/timefmt";
 import { redirect } from "next/navigation";
 import { q } from "@/lib/db";
 import { currentPlayerRows } from "@/lib/auth";
@@ -117,14 +117,14 @@ export default async function MePage() {
                   </div>
                   {m.status === "scheduled" && m.scheduled_at && (
                     <div className="mt-3 rounded-lg bg-fiba-50 p-3 text-sm">
-                      🕐 <strong><LocalTime iso={m.scheduled_at} locale={locale} dateStyle="full" /></strong>
+                      🕐 <strong><GmtTime iso={m.scheduled_at} locale={locale} dateStyle="full" suffix=" GMT" /></strong>
                       <p className="mt-1 text-xs text-stone-500">{t("scheduleHint").replace("{dk}", noShowMin)}</p>
                     </div>
                   )}
                   {m.status === "pending" && (
                     <p className="mt-2 text-xs text-stone-500">
                       {m.scheduled_at && (
-                        <>🕐 <strong><LocalTime iso={m.scheduled_at} locale={locale} /></strong> · </>
+                        <>🕐 <strong><GmtTime iso={m.scheduled_at} locale={locale} suffix=" GMT" /></strong> · </>
                       )}
                       {m.opponent ? t("timeTbd") : t("opponentTbd")}
                     </p>

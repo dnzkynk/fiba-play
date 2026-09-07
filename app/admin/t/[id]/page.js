@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { LocalTime } from "@/app/timefmt";
+import { GmtTime } from "@/app/timefmt";
 import { isAdmin } from "@/lib/auth";
 import { tournamentWithMatches, roundName, STATUS_TR, T_STATUS_TR } from "@/lib/queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -158,7 +158,7 @@ export default async function AdminTournament({ params }) {
                 <CardTitle>{roundName(ri, t.rounds.length)}</CardTitle>
                 {(t.round_times?.[ri] || t.starts_at) && (
                   <span className="text-xs font-medium text-fiba-600">
-                    🕐 <LocalTime locale="tr-TR"
+                    🕐 <GmtTime locale="tr-TR" suffix=" GMT"
                       iso={t.round_times?.[ri] ?? new Date(new Date(t.starts_at).getTime() + ri * t.round_interval_hours * 3600_000).toISOString()} />
                   </span>
                 )}
@@ -179,7 +179,7 @@ export default async function AdminTournament({ params }) {
                       <Badge variant={STATUS_VARIANT[m.status]}>{STATUS_TR[m.status]}</Badge>
                       {m.scheduled_at && m.status === "scheduled" && (
                         <span className="text-xs text-stone-500">
-                          🕐 <LocalTime iso={m.scheduled_at} locale="tr-TR" dateStyle="short" />
+                          🕐 <GmtTime iso={m.scheduled_at} locale="tr-TR" dateStyle="short" suffix=" GMT" />
                         </span>
                       )}
                       {m.status === "live" && (

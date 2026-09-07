@@ -1,5 +1,5 @@
 // Genel Bakış: şu an ne oluyor — canlı maçlar, yaklaşan randevular, son sonuçlar.
-import { LocalTime } from "@/app/timefmt";
+import { GmtTime } from "@/app/timefmt";
 import { q } from "@/lib/db";
 import { isAdmin } from "@/lib/auth";
 import { T_STATUS_TR } from "@/lib/queries";
@@ -127,7 +127,7 @@ export default async function AdminDashboard() {
                     <span className="text-xs text-stone-400">vs</span>
                     <span className="font-medium">{m.p2n ?? "—"}</span>
                     <span className="ml-auto text-xs tabular-nums text-stone-500">
-                      <LocalTime iso={m.scheduled_at} locale="tr-TR" dateStyle="short" />
+                      <GmtTime iso={m.scheduled_at} locale="tr-TR" dateStyle="short" suffix=" GMT" />
                     </span>
                   </div>
                 ))}
@@ -186,7 +186,7 @@ export default async function AdminDashboard() {
                         {m.result_via === "forfeit" && m.wn && <span className="text-xs text-stone-400"> (hükmen)</span>}
                       </TD>
                       <TD className="text-right text-xs tabular-nums text-stone-400">
-                        <LocalTime iso={m.updated_at} locale="tr-TR" dateStyle="short" />
+                        <GmtTime iso={m.updated_at} locale="tr-TR" dateStyle="short" />
                       </TD>
                     </TR>
                   ))}

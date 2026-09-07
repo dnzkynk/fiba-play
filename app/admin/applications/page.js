@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, THead, TBody, TR, TH, TD } from "@/components/ui/table";
 import { buttonVariants } from "@/components/ui/button";
-import { LocalTime } from "@/app/timefmt";
+import { GmtTime } from "@/app/timefmt";
 import { flagOf, countryName } from "@/lib/countries";
 import { ApplicationActions } from "./ui";
 
@@ -61,7 +61,7 @@ export default async function ApplicationsPage() {
                   <TD>{r.password
                     ? <span className="text-xs text-emerald-700">kendi belirledi</span>
                     : <span className="text-xs text-stone-400">otomatik</span>}</TD>
-                  <TD className="text-stone-500"><LocalTime iso={r.created_at} locale="tr-TR" dateStyle="short" /></TD>
+                  <TD className="text-stone-500"><GmtTime iso={r.created_at} locale="tr-TR" dateStyle="short" /></TD>
                   <TD><Badge variant={STATUS[r.status].variant}>{STATUS[r.status].label}</Badge></TD>
                   <TD className="text-right"><ApplicationActions id={r.id} status={r.status} tournaments={draftTournaments} /></TD>
                 </TR>
